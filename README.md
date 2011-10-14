@@ -41,7 +41,7 @@ Syntax
 General
 -------
 
-All Lex code is delimeted by double curly braces (`{{ }}`).  These delimeters was chosen to reduce the chance of conflicts with JavaScript and CSS.
+All Lex code is delimeted by double curly braces (`{{ }}`).  These delimeters were chosen to reduce the chance of conflicts with JavaScript and CSS.
 
 Here is an example of some Lex template code:
 
