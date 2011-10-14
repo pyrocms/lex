@@ -8,6 +8,33 @@ This is still under heavy development.
 
 _Lex is released under the MIT License and is Copyrighted 2011 Dan Horrigan._
 
+Basic Usage
+===========
+
+Including Lex
+-------------
+
+Lex includes a basic autoloader to load it's classes.
+
+    include 'lib/Lex/Autoloader.php';
+    Lex_Autoloader::register();
+
+Using Lex
+---------
+
+Basic parsing of a file:
+
+    $parser = new Lex_Parser();
+    $template = $parser->parse(file_get_contents('template.lex'), $data);
+
+You can also set the Scope Glue (see "Scope Glue" under Syntax below):
+
+    $parser = new Lex_Parser();
+    $parser->scope_glue(':');
+    $template = $parser->parse(file_get_contents('template.lex'), $data);
+
+
+
 Syntax
 ======
 
