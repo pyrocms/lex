@@ -19,7 +19,7 @@ Example:
 Whitespace in Tags
 ------------------
 
-You can now put whitespace in your tags before and after the delimeters.  This goes for any type of tag: variable, conditional, etc.
+You can now put whitespace in your tags before and after the delimeters. ***The whitespace is optional.***
 
 Example
 
@@ -39,3 +39,5 @@ Likewise, if the variable returns a string, you do not have to surround it with 
 **New style:**
 
     {{ if name == 'Dan' }}
+
+_Note that you can use the whitespace in conditional tags as well._
