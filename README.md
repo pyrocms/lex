@@ -3,7 +3,7 @@ Lex
 
 Lex is a lightweight template parser.
 
-This is still under heavy development.
+**This is still under heavy development.**
 
 
 _Lex is released under the MIT License and is Copyrighted 2011 Dan Horrigan._
@@ -33,6 +33,10 @@ You can also set the Scope Glue (see "Scope Glue" under Syntax below):
     $parser->scope_glue(':');
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 
+If you only want to parse a data array and not worry about callback tags or comments, you can do use the `parse_data()` method:
+
+    $parser = new Lex_Parser();
+    $template = $parser->parse_data(file_get_contents('template.lex'), $data);
 
 
 Syntax
@@ -51,7 +55,7 @@ Here is an example of some Lex template code:
 Scope Glue
 ----------
 
-Scope Glue is the character(s) used by Lex to trigger a scope change.  A scope change is what happens when, for instance, you are accessing a nested variable inside and array, or when scoping a custom callback tag.
+Scope Glue is/are the character(s) used by Lex to trigger a scope change.  A scope change is what happens when, for instance, you are accessing a nested variable inside and array/object, or when scoping a custom callback tag.
 
 By default a dot (`.`) is used as the Scope Glue, although you can select any character(s).
 
