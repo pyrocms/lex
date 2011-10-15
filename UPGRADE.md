@@ -25,6 +25,27 @@ Example
 
     {{ name }}
 
+Scope Glue
+----------
+
+Scope glue is a new concept in Lex.  The Scope glue is the character used to separate, you guessed it, scopes.  A scope is what was called a 'segment' in Tags.
+
+By default the Scope Glue is a dot (`.`).  However, that can be changed.  Please see the README for more detailed information.
+
+Callback Tags in Conditionals
+-----------------------------
+
+Callback Tags in conditionals are allowed, however, are frowned upon.  If a Callback Tag is required in a conditional, it would probable be better rewritten as a Variable.
+
+Something like this still works:
+
+    {{ if '{{theme.options option="layout"}' == 'fixed' }}
+
+However, it would probably be better used as a Variable:
+
+    {{ if theme.options.layout == 'fixed' }}
+
+
 Variables in Conditionals
 -------------------------
 
@@ -41,3 +62,4 @@ Likewise, if the variable returns a string, you do not have to surround it with 
     {{ if name == 'Dan' }}
 
 _Note that you can use the whitespace in conditional tags as well._
+
