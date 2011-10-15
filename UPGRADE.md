@@ -39,7 +39,7 @@ Callback Tags in conditionals are allowed, however, are frowned upon.  If a Call
 
 Something like this still works:
 
-    {{ if '{{theme.options option="layout"}' == 'fixed' }}
+    {{ if '{{theme.options option="layout"}}' == 'fixed' }}
 
 However, it would probably be better used as a Variable:
 
