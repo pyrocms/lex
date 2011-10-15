@@ -29,4 +29,4 @@ Likewise, if the variable returns a string, you do not have to surround it with 
 
 **New style:**
 
-    {if name == 'Dan'}
+    {{if name == 'Dan'}}
