@@ -33,10 +33,10 @@ You can also set the Scope Glue (see "Scope Glue" under Syntax below):
     $parser->scope_glue(':');
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 
-If you only want to parse a data array and not worry about callback tags or comments, you can do use the `parse_data()` method:
+If you only want to parse a data array and not worry about callback tags or comments, you can do use the `parse_variables()` method:
 
     $parser = new Lex_Parser();
-    $template = $parser->parse_data(file_get_contents('template.lex'), $data);
+    $template = $parser->parse_variables(file_get_contents('template.lex'), $data);
 
 
 Syntax
@@ -63,7 +63,7 @@ By default a dot (`.`) is used as the Scope Glue, although you can select any ch
 Whitespace
 ----------
 
-Whitespace before or after the delimeters is allowed, however, in certain cases, whitespace within the tag is prohibited (explained in the following sections). 
+Whitespace before or after the delimeters is allowed, however, in certain cases, whitespace within the tag is prohibited (explained in the following sections).
 
 Some valid examples:
 
@@ -115,10 +115,10 @@ Basic Example:
 
 	{{# Parsed: Hello, World! #}}
     Hello, {{ name }}!
-    
+
 	{{# Parsed: <h1>Lex is Awesome!</h1> #}}
     <h1>{{ title }}</h1>
-    
+
 	{{# Parsed: My real name is Lex Luther!</h1> #}}
     My real name is {{ real_name.first }} {{ real_name.last }}
 
@@ -162,7 +162,7 @@ In the following example, let's assume you have the following array/object of va
             ),
         ),
     )
-    
+
 In the template, we will want to display the title, followed by a list of projects and their assignees.
 
     <h1>{{ title }}</h1>
