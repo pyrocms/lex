@@ -92,6 +92,14 @@ You can add comments to your templates by wrapping the text in `{{# #}}`.
         They can be multi-line too.
     #}}
 
+Prevent Parsing
+---------------
+
+You can prevent the parser from parsing blocks of code by wrapping it in `{{ noparse }}{{ /noparse }}` tags.
+
+    {{ noparse }}
+        Hello, {{ name }}!
+    {{ /noparse }}
 
 Variable Tags
 -------------

@@ -11,12 +11,13 @@ class LexParsingException extends Exception { }
 
 class Lex_Parser
 {
-	protected $text = '';
 	protected $scope_glue = '.';
 	protected $tag_regex = '';
 	protected $variable_loop_regex = '';
 	protected $variable_regex = '';
-	protected $data = array();
+	protected $extractions = array(
+		'noparse' => array(),
+	);
 
 	/**
 	 * The main Lex parser method.  Essentially acts as dispatcher to
@@ -30,12 +31,30 @@ class Lex_Parser
 	public function parse($text, $data = array(), $callback = false)
 	{
 		$this->setup_regex();
-		$this->remove_comments();
 
-		$this->data = $data;
-		$this->text = $this->parse_variables($text);
+		$text = $this->extract_noparse($text);
+		$text = $this->parse_comments($text);
+		$text = $this->parse_variables($text, $data);
 
-		return $this->text;
+		if ($callback)
+		{
+			$text = $this->parse_callback_tags($text, $callback);
+		}
+
+		$text = $this->inject_extractions($text);
+
+		return $text;
+	}
+
+	/**
+	 * Removes all of the comments from the text.
+	 *
+	 * @param   string  $text  Text to remove comments from
+	 * @return  string
+	 */
+	public function parse_comments($text)
+	{
+		return preg_replace('/\{\{#.*?#\}\}/s', '', $text);
 	}
 
 	/**
@@ -46,10 +65,8 @@ class Lex_Parser
 	 * @param   array|object  $data  Array or object to use
 	 * @return  string
 	 */
-	public function parse_variables($text, $data = false)
+	public function parse_variables($text, $data)
 	{
-		$data = $data === false ? $this->data : $data;
-
 		/**
 		 * $data_matches[][0][0] is the raw data loop tag
 		 * $data_matches[][0][1] is the offset of raw data loop tag
@@ -90,6 +107,29 @@ class Lex_Parser
 	}
 
 	/**
+	 * Parses all Callback tags, and sends them through the given $callback.
+	 *
+	 * Array sent to callback:
+	 *
+	 *     array(
+	 *         'full_tag' => $full_tag,
+	 *         'attributes' => $attributes, // Array of attributes
+	 *         'scope' => $scope, // Array to define scope
+	 *         'segments' => $scopes, // Here for backwards compat with Tags
+	 *         'content' => $looped_content,
+	 *     )
+	 *
+	 * @param   string  $text      Text to parse
+	 * @param   mixed   $callback  Callback to apply to each tag
+	 * @return  string
+	 */
+	public function parse_callback_tags($text, $callback)
+	{
+
+		return $text;
+	}
+
+	/**
 	 * Gets or sets the Scope Glue
 	 *
 	 * @param   string|null  $glue  The Scope Glue
@@ -106,16 +146,6 @@ class Lex_Parser
 	}
 
 	/**
-	 * Removes all of the comments from the text.
-	 *
-	 * @return  void
-	 */
-	protected function remove_comments()
-	{
-		$this->text = preg_replace('/\{\{#.*?#\}\}/s', '', $this->text);
-	}
-
-	/**
 	 * Sets up all the global regex to use the correct Scope Glue.
 	 *
 	 * @return  void
@@ -124,9 +154,71 @@ class Lex_Parser
 	{
 		$glue = preg_quote($this->scope_glue, '/');
 
-		$this->tag_regex = '/\{\{(.*?)\}\}/';
+		$this->noparse_regex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
+
+		$this->callback_tag_regex = '/\{\{(.*?)\}\}/';
+		$this->callback_loop_tag_regex = '/\{\{(.*?)\}\}/';
 		$this->variable_loop_regex = '/\{\{\s*([a-zA-Z0-9_'.$glue.']+)\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 		$this->variable_regex = '/\{\{\s*([a-zA-Z0-9_'.$glue.']+)\s*\}\}/m';
+	}
+
+	/**
+	 * Removes all of the comments from the text.
+	 *
+	 * @return  void
+	 */
+	protected function extract_noparse($text)
+	{
+		/**
+		 * $matches[][0] is the raw noparse match
+		 * $matches[][1] is the noparse contents
+		 */
+		if (preg_match_all($this->noparse_regex, $text, $matches, PREG_SET_ORDER))
+		{
+			foreach ($matches as $match)
+			{
+				$text = $this->create_extraction('noparse', $match[0], $match[1], $text);
+			}
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Extracts text out of the given text and replaces it with a hash which
+	 * can be used to inject the extractions replacement later.
+	 *
+	 * @param   string  $type         Type of extraction
+	 * @param   string  $extraction   The text to extract
+	 * @param   string  $replacement  Text that will replace the extraction when re-injected
+	 * @param   string  $text         Text to extract out of
+	 * @return  string
+	 */
+	protected function create_extraction($type, $extraction, $replacement, $text)
+	{
+		$hash = md5($replacement);
+		$this->extractions[$type][$hash] = $replacement;
+
+		return str_replace($extraction, "{$type}_{$hash}", $text);
+	}
+
+	/**
+	 * Injects all of the extractions.
+	 *
+	 * @param   string  $text  Text to inject into
+	 * @return  string
+	 */
+	protected function inject_extractions($text)
+	{
+		foreach ($this->extractions as $type => $extractions)
+		{
+			foreach ($extractions as $hash => $replacement)
+			{
+				$text = str_replace("{$type}_{$hash}", $replacement, $text);
+			}
+		}
+
+		return $text;
 	}
 
 	/**

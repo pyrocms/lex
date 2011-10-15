@@ -15,6 +15,10 @@
 			{{/template:partial}}
 		</ul>
 
+		{{ leftover:stuff }}
+			Foo
+		{{ /leftover:stuff }}
+
 		<h2>Projects</h2>
 		{{ projects }}
 			<h3>{{ name }}</h3>
@@ -25,5 +29,12 @@
 			{{ /contributors }}
 			</ul>
 		{{ /projects }}
+
+		<p>Example:</p>
+
+		{{ noparse }}
+		<pre>Hello, {{ name }}!</pre>
+		{{ /noparse }}
+
 	</body>
 </html>
