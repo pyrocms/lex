@@ -7,7 +7,8 @@ If you are upgrading your templates from 'Tags' or 'SimpleTags', please read bel
 
 This is not a list of all of the new features of Lex, it is simply a guide for upgrading your templates to work with Lex.
 
-### New Delimeters
+New Delimeters
+--------------
 
 The delimeters in Lex are two (2) braces(`{{ }}`), not one (1) (`{ }`).  You will need to change all of your tags to use the new style.
 
@@ -15,7 +16,8 @@ Example:
 
     {{name}}
 
-### Variables in Conditionals
+Variables in Conditionals
+-------------------------
 
 Variables in conditionals do not, and should not, be wrapped in delimeters.
 
