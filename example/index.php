@@ -9,6 +9,7 @@ $data = array(
 	'title'     => 'Lex is Awesome!',
 	'name'      => 'World',
 	'real_name' => new stdClass(),
+	'show_real_name' => true,
 	'nav_group' => 'cool-stuff',
 	'projects'  => array(
 		array(

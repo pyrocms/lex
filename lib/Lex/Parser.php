@@ -13,8 +13,21 @@ class Lex_Parser
 {
 	protected $scope_glue = '.';
 	protected $tag_regex = '';
-	protected $variable_loop_regex = '';
+
 	protected $variable_regex = '';
+	protected $variable_loop_regex = '';
+	protected $variable_tag_regex = '';
+
+	protected $callback_tag_regex = '';
+	protected $callback_loop_tag_regex = '';
+
+	protected $noparse_regex = '';
+
+	protected $conditional_regex = '';
+	protected $conditional_else_regex = '';
+	protected $conditional_end_regex = '';
+	protected $conditional_data = array();
+
 	protected $extractions = array(
 		'noparse' => array(),
 	);
@@ -28,12 +41,22 @@ class Lex_Parser
 	 * @param   mixed         $callback  Callback to use for Callback Tags
 	 * @return  string
 	 */
-	public function parse($text, $data = array(), $callback = false)
+	public function parse($text, $data = array(), $callback = false, $allow_php = false)
 	{
 		$this->setup_regex();
 
-		$text = $this->extract_noparse($text);
+		// The parse_conditionals method executes any PHP in the text, so clean it up.
+		if ( ! $allow_php)
+		{
+			$text = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $text);
+		}
+
 		$text = $this->parse_comments($text);
+		$text = $this->extract_noparse($text);
+
+		// Order is important here.  We parse conditionals first as to avoid
+		// unnecessary code from being parsed and executed.
+		$text = $this->parse_conditionals($text, $data);
 		$text = $this->parse_variables($text, $data);
 
 		if ($callback)
@@ -95,7 +118,7 @@ class Lex_Parser
 		 * $data_matches[0] is the raw data tag
 		 * $data_matches[1] is the data variable (dot notated)
 		 */
-		if (preg_match_all($this->variable_regex, $text, $data_matches))
+		if (preg_match_all($this->variable_tag_regex, $text, $data_matches))
 		{
 			foreach ($data_matches[1] as $index => $var)
 			{
@@ -130,6 +153,42 @@ class Lex_Parser
 	}
 
 	/**
+	 * Parses all conditionals, then executes the conditionals.
+	 *
+	 * @param   string  $text  Text to parse
+	 * @param   mixed   $data  Data to use when executing conditionals
+	 * @return  string
+	 */
+	public function parse_conditionals($text, $data)
+	{
+		preg_match_all($this->conditional_regex, $text, $matches, PREG_SET_ORDER);
+
+		$this->conditional_data = $data;
+
+		/**
+		 * $matches[][0] = Full Match
+		 * $matches[][1] = Either 'if', 'unless', 'elseif', 'unlessif'
+		 * $matches[][2] = Condition
+		 */
+		foreach ($matches as $match)
+		{
+			$condition = $match[2];
+			$condition = preg_replace_callback('/\b('.$this->variable_regex.')\b/', array($this, 'process_condition_var'), $match[2]);
+
+			$conditional = '<?php '.$match[1].' ('.$condition.'): ?>';
+
+			$text = preg_replace('/'.preg_quote($match[0]).'/m', $conditional, $text, 1);
+		}
+
+		$text = preg_replace($this->conditional_else_regex, '<?php else: ?>', $text);
+		$text = preg_replace($this->conditional_end_regex, '<?php endif; ?>', $text);
+
+		$text = $this->parse_php($text);
+
+		return $text;
+	}
+
+	/**
 	 * Gets or sets the Scope Glue
 	 *
 	 * @param   string|null  $glue  The Scope Glue
@@ -146,6 +205,54 @@ class Lex_Parser
 	}
 
 	/**
+	 * This is used as a callback for the conditional parser.  It takes a variable
+	 * and returns the value of it, properly formatted.
+	 *
+	 * @param   array  $match  A match from preg_replace_callback
+	 * @return  string
+	 */
+	protected function process_condition_var($match)
+	{
+		$var = $match[1];
+		if (in_array(strtolower($var), array('true', 'false', 'null')))
+		{
+			return $var;
+		}
+
+		$value = $this->get_variable($var, $this->conditional_data, '__process_condition_var__');
+
+		if ($value === '__process_condition_var__')
+		{
+			$value = $var;
+		}
+
+		if ($value === null)
+		{
+			return "null";
+		}
+		elseif ($value === true)
+		{
+			return "true";
+		}
+		elseif ($value === false)
+		{
+			return "false";
+		}
+		elseif (is_numeric($value))
+		{
+			return $value;
+		}
+		elseif (is_string($value))
+		{
+			return '"'.addslashes($value).'"';
+		}
+		else
+		{
+			return $value;
+		}
+	}
+
+	/**
 	 * Sets up all the global regex to use the correct Scope Glue.
 	 *
 	 * @return  void
@@ -156,10 +263,16 @@ class Lex_Parser
 
 		$this->noparse_regex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
+		$this->conditional_regex = '/\{\{\s*(if|elseif)\s*(?:\()?(.*?)(?:\))?\s*\}\}/ms';
+		$this->conditional_else_regex = '/\{\{\s*else\s*\}\}/ms';
+		$this->conditional_end_regex = '/\{\{\s*(\/if|endif)\s*\}\}/ms';
+
 		$this->callback_tag_regex = '/\{\{(.*?)\}\}/';
 		$this->callback_loop_tag_regex = '/\{\{(.*?)\}\}/';
-		$this->variable_loop_regex = '/\{\{\s*([a-zA-Z0-9_'.$glue.']+)\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
-		$this->variable_regex = '/\{\{\s*([a-zA-Z0-9_'.$glue.']+)\s*\}\}/m';
+
+		$this->variable_regex = '[a-zA-Z0-9_'.$glue.']+';
+		$this->variable_loop_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+		$this->variable_tag_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}/m';
 	}
 
 	/**
@@ -255,5 +368,19 @@ class Lex_Parser
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Evaluates the PHP in the given string.
+	 *
+	 * @param   string  $text  Text to evaluate
+	 * @return  string
+	 */
+	protected function parse_php($text)
+	{
+		ob_start();
+		echo eval('?>'.$text.'<?php ');
+
+		return ob_get_clean();
 	}
 }

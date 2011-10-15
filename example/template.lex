@@ -5,9 +5,15 @@
 	</head>
 	<body>
 
+		<?php echo 'PHP is not parsed, unless you explicitly tell it to.' ?>
+
 		<h1>Hello, {{ name }}!</h1>
 
-		<p>My real name is {{real_name.first}} {{real_name.last}}</p>
+	{{ if show_real_name }}
+		<p>My name is {{real_name.first}} {{real_name.last}}</p>
+	{{ else }}
+		<p>My name is John Doe</p>
+	{{ endif }}
 
 		<ul id="navigation">
 			{{template:partial name="navigation" group="{{nav_group}}"}}
@@ -20,6 +26,7 @@
 		{{ /leftover:stuff }}
 
 		<h2>Projects</h2>
+
 		{{ projects }}
 			<h3>{{ name }}</h3>
 			<h4>Contributors</h4>
