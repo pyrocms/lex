@@ -65,7 +65,7 @@ Whitespace
 
 Whitespace before or after the delimeters is allowed, however, in certain cases, whitespace within the tag is prohibited (explained in the following sections).
 
-Some valid examples:
+**Some valid examples:**
 
     {{ name }}
     {{name }}
@@ -75,7 +75,7 @@ Some valid examples:
       name
     }}
 
-Some invalid examples:
+**Some invalid examples:**
 
     {{ na me }}
     { {name} }
@@ -85,6 +85,8 @@ Comments
 --------
 
 You can add comments to your templates by wrapping the text in `{{# #}}`.
+
+**Example**
 
     {{# This will not bt parsed or shown in the resulting HTML #}}
 
@@ -96,6 +98,8 @@ Prevent Parsing
 ---------------
 
 You can prevent the parser from parsing blocks of code by wrapping it in `{{ noparse }}{{ /noparse }}` tags.
+
+**Example**
 
     {{ noparse }}
         Hello, {{ name }}!
@@ -119,7 +123,7 @@ For our basic examples, lets assume you have the following array of variables (s
         )
     )
 
-Basic Example:
+**Basic Example:**
 
 	{{# Parsed: Hello, World! #}}
     Hello, {{ name }}!
@@ -138,11 +142,11 @@ Looped Variable tags are just like Simple Variable tags, except they correspond 
 
 A Looped Variable tag is a closed tag which wraps the looped content.  The closing tag must match the opening tag exactly, except it must be prefixed with a forward slash (`/`).  There can be **no** whitespace between the forward slash and the tag name (whitespace before the forward slash is allowed).
 
-Valid Example:
+**Valid Example:**
 
     {{ projects }} Some Content Here {{ /projects }}
 
-Invalid Example:
+**Invalid Example:**
 
     {{ projects }} Some Content Here {{/ projects }}
 
@@ -185,6 +189,52 @@ In the template, we will want to display the title, followed by a list of projec
     {{ /projects }}
 
 As you can see inside each project element we have access to that project's assignees.  You can also see that you can loop over sub-values, exactly like you can any other array.
+
+Conditionals
+-------------
+
+Conditionals in Lex are simple and easy to use.  It allows for the standard `if`, `elseif`, and `else`.
+
+All `if` blocks must be closed with either a `{{ /if }}` or `{{ endif }}` tag.
+
+Variables inside of if Conditionals, do not, and should not, use the Tag delimeters (it will cause wierd issues with your output).
+
+A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`).  You can also use any of the Logical Operators (`!`, `||`, `&&`, `and`, `or`) to check if something is false.  The 
+
+**Examples**
+
+    {{ if show_name }}
+        <p>My name is {{real_name.first}} {{real_name.last}}</p>
+    {{ endif }}
+    
+    {{ if user.group == 'admin' }}
+        <p>You are an Admin!</p>
+    {{ elseif user.group == 'user' }}
+        <p>You are a normal User.</p>
+    {{ else }}
+        <p>I don't know what you are.</p>
+    {{ endif }}
+    
+    {{ if show_real_name }}
+        <p>My name is {{real_name.first}} {{real_name.last}}</p>
+    {{ else }}
+        <p>My name is John Doe</p>
+    {{ endif }}
+
+
+### Callback Tags in Conditionals
+
+Callback Tags in conditionals are allowed, however, are frowned upon.  If a Callback Tag is required in a conditional, it would probable be better rewritten as a Variable.
+
+Something like this still works:
+
+    {{ if '{{theme.options option="layout"}}' == 'fixed' }}
+
+However, it would probably be better used as a Variable:
+
+    {{ if theme.options.layout == 'fixed' }}
+
+_Note that you must surround the tag in quotes if you want it to be treated as a string._
 
 Callback Tags
 -------------
