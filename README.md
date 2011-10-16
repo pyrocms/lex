@@ -199,7 +199,7 @@ All `if` blocks must be closed with either a `{{ /if }}` or `{{ endif }}` tag.
 
 Variables inside of if Conditionals, do not, and should not, use the Tag delimeters (it will cause wierd issues with your output).
 
-A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`).  You can also use any of the Logical Operators (`!`, `||`, `&&`, `and`, `or`) to check if something is false.  The 
+A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`).  You can also use any of the Logical Operators (`!`, `||`, `&&`, `and`, `or`).
 
 **Examples**
 
