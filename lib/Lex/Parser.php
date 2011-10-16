@@ -278,7 +278,7 @@ class Lex_Parser
 
 		$this->noparse_regex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
-		$this->conditional_regex = '/\{\{\s*(if|elseif)\s*(?:\()?(.*?)(?:\))?\s*\}\}/ms';
+		$this->conditional_regex = '/\{\{\s*(if|elseif)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
 		$this->conditional_else_regex = '/\{\{\s*else\s*\}\}/ms';
 		$this->conditional_end_regex = '/\{\{\s*(\/if|endif)\s*\}\}/ms';
 
