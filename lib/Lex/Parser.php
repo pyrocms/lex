@@ -173,7 +173,20 @@ class Lex_Parser
 		foreach ($matches as $match)
 		{
 			$condition = $match[2];
+
+			// Extract all literal string in the conditional to make it easier
+			if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $match[2], $str_matches))
+			{
+				foreach ($str_matches[0] as $m)
+				{
+					$match[2] = $this->create_extraction('__cond_str', $m, $m, $match[2]);
+				}
+			}
+
 			$condition = preg_replace_callback('/\b('.$this->variable_regex.')\b/', array($this, 'process_condition_var'), $match[2]);
+
+			// Re-inject any strings we extracted
+			$condition = $this->inject_extractions($condition, '__cond_str');
 
 			$conditional = '<?php '.$match[1].' ('.$condition.'): ?>';
 
@@ -213,8 +226,10 @@ class Lex_Parser
 	 */
 	protected function process_condition_var($match)
 	{
-		$var = $match[1];
-		if (in_array(strtolower($var), array('true', 'false', 'null')))
+		$var = $match[0];
+		if (in_array(strtolower($var), array('true', 'false', 'null', 'or', 'and')) or
+		    strpos($var, '__cond_str') === 0 or
+		    is_numeric($var))
 		{
 			return $var;
 		}
@@ -223,7 +238,7 @@ class Lex_Parser
 
 		if ($value === '__process_condition_var__')
 		{
-			$value = $var;
+			return 'null';
 		}
 
 		if ($value === null)
@@ -321,11 +336,26 @@ class Lex_Parser
 	 * @param   string  $text  Text to inject into
 	 * @return  string
 	 */
-	protected function inject_extractions($text)
+	protected function inject_extractions($text, $type = null)
 	{
-		foreach ($this->extractions as $type => $extractions)
+		if ($type === null)
 		{
-			foreach ($extractions as $hash => $replacement)
+			foreach ($this->extractions as $type => $extractions)
+			{
+				foreach ($extractions as $hash => $replacement)
+				{
+					$text = str_replace("{$type}_{$hash}", $replacement, $text);
+				}
+			}
+		}
+		else
+		{
+			if ( ! isset($this->extractions[$type]))
+			{
+				return $text;
+			}
+
+			foreach ($this->extractions[$type] as $hash => $replacement)
 			{
 				$text = str_replace("{$type}_{$hash}", $replacement, $text);
 			}
