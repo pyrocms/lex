@@ -122,7 +122,10 @@ class Lex_Parser
 		{
 			foreach ($data_matches[1] as $index => $var)
 			{
-				$text = str_replace($data_matches[0][$index], $this->get_variable($var, $data), $text);
+				if ($val = $this->get_variable($var, $data))
+				{
+					$text = str_replace($data_matches[0][$index], $val, $text);
+				}
 			}
 		}
 
@@ -148,6 +151,33 @@ class Lex_Parser
 	 */
 	public function parse_callback_tags($text, $callback)
 	{
+		/**
+		 * $match[0][0] is the raw tag
+		 * $match[0][1] is the offset of raw tag
+		 * $match[1][0] is the callback name
+		 * $match[1][1] is the offset of callback name
+		 * $match[2][0] is the parameters
+		 * $match[2][1] is the offset of parameters
+		 */
+		while (preg_match('/\{\{\s*('.$this->variable_regex.')(\s+.*?)?\s*\}\}/ms', $text, $match, PREG_OFFSET_CAPTURE))
+		{
+			$tag = $match[0][0];
+			$start = $match[0][1];
+			$name = $match[1][0];
+			$parameters = $this->parse_parameters($match[2][0]);
+			$content = '';
+
+			$temp_text = substr($text, $start + strlen($tag));
+
+			if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE))
+			{
+				$content = substr($temp_text, 0, $match[0][1]);
+				$tag .= $content.$match[0][0];
+			}
+
+			$replacement = call_user_func_array($callback, array($name, $parameters, $content));
+			$text = preg_replace('/'.preg_quote($tag, '/').'/m', $replacement, $text, 1);
+		}
 
 		return $text;
 	}
@@ -190,7 +220,7 @@ class Lex_Parser
 
 			$conditional = '<?php '.$match[1].' ('.$condition.'): ?>';
 
-			$text = preg_replace('/'.preg_quote($match[0]).'/m', $conditional, $text, 1);
+			$text = preg_replace('/'.preg_quote($match[0], '/').'/m', $conditional, $text, 1);
 		}
 
 		$text = preg_replace($this->conditional_else_regex, '<?php else: ?>', $text);
@@ -276,18 +306,15 @@ class Lex_Parser
 	{
 		$glue = preg_quote($this->scope_glue, '/');
 
+		$this->variable_regex = '[a-zA-Z0-9_'.$glue.']+';
+		$this->variable_loop_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+		$this->variable_tag_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}/m';
+
 		$this->noparse_regex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
 		$this->conditional_regex = '/\{\{\s*(if|elseif)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
 		$this->conditional_else_regex = '/\{\{\s*else\s*\}\}/ms';
 		$this->conditional_end_regex = '/\{\{\s*(\/if|endif)\s*\}\}/ms';
-
-		$this->callback_tag_regex = '/\{\{(.*?)\}\}/';
-		$this->callback_loop_tag_regex = '/\{\{(.*?)\}\}/';
-
-		$this->variable_regex = '[a-zA-Z0-9_'.$glue.']+';
-		$this->variable_loop_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
-		$this->variable_tag_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}/m';
 	}
 
 	/**
@@ -412,5 +439,28 @@ class Lex_Parser
 		echo eval('?>'.$text.'<?php ');
 
 		return ob_get_clean();
+	}
+
+
+	/**
+	 * Parses a parameter string into an array
+	 *
+	 * @param	string	The string of parameters
+	 * @return	array
+	 */
+	protected function parse_parameters($parameters)
+	{
+		if (preg_match_all('/(.*?)\s*=\s*(\'|\")(.*?)\\2/is', trim($parameters), $matches))
+		{
+			$return = array();
+			foreach ($matches[1] as $i => $attr)
+			{
+				$return[trim($matches[1][$i])] = $matches[3][$i];
+			}
+
+			return $return;
+		}
+
+		return array();
 	}
 }
