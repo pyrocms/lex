@@ -39,6 +39,13 @@ If you only want to parse a data array and not worry about callback tags or comm
     $template = $parser->parse_variables(file_get_contents('template.lex'), $data);
 
 
+### PHP in Templates
+
+By default PHP is encoded, and not executed.  This is for security reasons.  However, you may at times want to enable it.  To do that simply send `true` as the third parameter to your `parse()` call.
+
+    $parser = new Lex_Parser();
+    $template = $parser->parse(file_get_contents('template.lex'), $data, true);
+
 Syntax
 ======
 
@@ -206,7 +213,7 @@ A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!
     {{ if show_name }}
         <p>My name is {{real_name.first}} {{real_name.last}}</p>
     {{ endif }}
-    
+
     {{ if user.group == 'admin' }}
         <p>You are an Admin!</p>
     {{ elseif user.group == 'user' }}
@@ -214,7 +221,7 @@ A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!
     {{ else }}
         <p>I don't know what you are.</p>
     {{ endif }}
-    
+
     {{ if show_real_name }}
         <p>My name is {{real_name.first}} {{real_name.last}}</p>
     {{ else }}
