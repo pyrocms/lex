@@ -41,10 +41,10 @@ If you only want to parse a data array and not worry about callback tags or comm
 
 ### PHP in Templates
 
-By default PHP is encoded, and not executed.  This is for security reasons.  However, you may at times want to enable it.  To do that simply send `true` as the third parameter to your `parse()` call.
+By default PHP is encoded, and not executed.  This is for security reasons.  However, you may at times want to enable it.  To do that simply send `true` as the fourth parameter to your `parse()` call.
 
     $parser = new Lex_Parser();
-    $template = $parser->parse(file_get_contents('template.lex'), $data, true);
+    $template = $parser->parse(file_get_contents('template.lex'), $data, $callback, true);
 
 Syntax
 ======
