@@ -35,9 +35,16 @@ $data['real_name']->first = 'Lex';
 $data['real_name']->last  = 'Luther';
 
 $parser = new Lex_Parser();
-
-$parsed = $parser->parse($template, $data);
+$parser->scope_glue(':');
+$parsed = $parser->parse($template, $data, 'callback');
 
 echo "<hr /><h2>Original</h2>".htmlentities($template)."\n\n";
 echo "<hr /><h2>Parsed</h2>".htmlentities($parsed)."\n\n";
 echo "<hr /><h1>Output</h1></pre>".$parsed;
+
+function callback($name, $attributes, $content)
+{
+	$parser = new Lex_Parser();
+	$parser->scope_glue(':');
+	return $parser->parse($content, array('baz' => 'baz'));
+}

@@ -10,7 +10,7 @@
 		<h1>Hello, {{ name }}!</h1>
 
 	{{ if show_real_name }}
-		<p>My name is {{real_name.first}} {{real_name.last}}</p>
+		<p>My name is {{real_name:first}} {{real_name:last}}</p>
 	{{ else }}
 		<p>My name is John Doe</p>
 	{{ endif }}
@@ -22,7 +22,7 @@
 		</ul>
 
 		{{ leftover:stuff }}
-			Foo
+			{{ if baz == 'baz' }} Foo {{ endif }}
 		{{ /leftover:stuff }}
 
 		<h2>Projects</h2>
