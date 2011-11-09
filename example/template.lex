@@ -28,7 +28,7 @@
 		<h2>Projects</h2>
 
 		{{ projects }}
-			<h3>{{ name }}</h3>
+			<h3>{{ em value=name }}</h3>
 			<h4>Contributors</h4>
 			<ul>
 			{{ contributors }}

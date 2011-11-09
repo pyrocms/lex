@@ -44,6 +44,10 @@ echo "<hr /><h1>Output</h1></pre>".$parsed;
 
 function callback($name, $attributes, $content)
 {
+	if ($name == 'em')
+	{
+		return '<em>'.$attributes['value'].'</em>';
+	}
 	$parser = new Lex_Parser();
 	$parser->scope_glue(':');
 	return $parser->parse($content, array('baz' => 'baz'));
