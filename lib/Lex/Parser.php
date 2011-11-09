@@ -495,7 +495,15 @@ class Lex_Parser
 	 */
 	protected function get_variable($key, $data, $default = null)
 	{
-		foreach (explode($this->scope_glue, $key) as $key_part)
+		if (strpos($key, $this->scope_glue) === false)
+		{
+			$parts = explode('.', $key);
+		}
+		else
+		{
+			$parts = explode($this->scope_glue, $key);
+		}
+		foreach ($parts as $key_part)
 		{
 			if (is_array($data))
 			{
