@@ -377,7 +377,7 @@ class Lex_Parser
 		$this->variable_loop_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 		$this->variable_tag_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}/m';
 
-		$this->callback_block_regex = '/\{\{\s*('.$this->variable_regex.')(\s+.*?)?\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+		$this->callback_block_regex = '/\{\{\s*('.$this->variable_regex.')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 
 		$this->noparse_regex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
