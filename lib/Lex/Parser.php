@@ -354,6 +354,10 @@ class Lex_Parser
 		{
 			return '"'.addslashes((string) $value).'"';
 		}
+		elseif (is_array($value))
+		{
+			return !empty($value) ? "true" : "false";
+		}
 		else
 		{
 			return $value;
