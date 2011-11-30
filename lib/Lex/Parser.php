@@ -344,7 +344,7 @@ class Lex_Parser
 		}
 		elseif (is_numeric($value))
 		{
-			return $value;
+			return '"'.$value.'"';
 		}
 		elseif (is_string($value))
 		{
