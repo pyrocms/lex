@@ -221,7 +221,6 @@ class Lex_Parser
 		preg_match_all($this->conditional_regex, $text, $matches, PREG_SET_ORDER);
 
 		$this->conditional_data = $data;
-		$this->in_condition = true;
 
 		/**
 		 * $matches[][0] = Full Match
@@ -230,6 +229,8 @@ class Lex_Parser
 		 */
 		foreach ($matches as $match)
 		{
+			$this->in_condition = true;
+			
 			$condition = $match[2];
 
 			// Extract all literal string in the conditional to make it easier
