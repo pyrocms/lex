@@ -28,6 +28,7 @@ $data = array(
 				array('name' => 'Dan'),
 				array('name' => 'Phil'),
 				array('name' => 'Jerel'),
+				array('name' => 'Ziggy')
 			),
 		),
 	),

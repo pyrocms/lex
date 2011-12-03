@@ -228,7 +228,6 @@ class Lex_Parser
 		preg_match_all($this->conditional_regex, $text, $matches, PREG_SET_ORDER);
 
 		$this->conditional_data = $data;
-		$this->in_condition = true;
 
 		/**
 		 * $matches[][0] = Full Match
@@ -237,6 +236,8 @@ class Lex_Parser
 		 */
 		foreach ($matches as $match)
 		{
+			$this->in_condition = true;
+			
 			$condition = $match[2];
 
 			// Extract all literal string in the conditional to make it easier
@@ -387,7 +388,7 @@ class Lex_Parser
 		}
 		elseif (is_numeric($value))
 		{
-			return $value;
+			return '"'.$value.'"';
 		}
 		elseif (is_string($value))
 		{
@@ -396,6 +397,10 @@ class Lex_Parser
 		elseif (is_object($value) and is_callable(array($value, '__toString')))
 		{
 			return '"'.addslashes((string) $value).'"';
+		}
+		elseif (is_array($value))
+		{
+			return !empty($value) ? "true" : "false";
 		}
 		else
 		{
@@ -421,7 +426,7 @@ class Lex_Parser
 		$this->variable_loop_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 		$this->variable_tag_regex = '/\{\{\s*('.$this->variable_regex.')\s*\}\}/m';
 
-		$this->callback_block_regex = '/\{\{\s*('.$this->variable_regex.')(\s+.*?)?\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+		$this->callback_block_regex = '/\{\{\s*('.$this->variable_regex.')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 
 		$this->noparse_regex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
