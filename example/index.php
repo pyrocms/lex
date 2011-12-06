@@ -27,6 +27,7 @@ $data = array(
 			'contributors' => array(
 				array('name' => 'Dan'),
 				array('name' => 'Phil'),
+				array('name' => 'Jerel'),
 			),
 		),
 	),
