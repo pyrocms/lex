@@ -590,7 +590,14 @@ class Lex_Parser
 	protected function parse_php($text)
 	{
 		ob_start();
-		echo eval('?>'.$text.'<?php ');
+		$result = eval('?>'.$text.'<?php ');
+		
+		if ($result === false)
+		{
+			echo '<br />You have a syntax error in your Lex tags. The snippet of text that contains the error has been output below:<br />';
+			exit(str_replace(array('?>', '<?php '), '', $text));
+			
+		}
 
 		return ob_get_clean();
 	}
