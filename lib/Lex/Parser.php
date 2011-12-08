@@ -585,7 +585,7 @@ class Lex_Parser
 		$parameters = $this->inject_extractions($parameters, '__param_str');
 		$this->in_condition = false;
 
-		if (preg_match_all('/(.*?)\s*=\s*(\'|\")(.*?)\\2/is', trim($parameters), $matches))
+		if (preg_match_all('/(.*?)\s*=\s*(\'|"|&#?\w+;)(.*?)\2/s', trim($parameters), $matches))
 		{
 			$return = array();
 			foreach ($matches[1] as $i => $attr)
