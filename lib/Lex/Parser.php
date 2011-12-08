@@ -14,6 +14,7 @@ class Lex_Parser
 	protected $regex_setup = false;
 	protected $scope_glue = '.';
 	protected $tag_regex = '';
+	protected $cumulative_noparse = false;
 
 	protected $in_condition = false;
 
@@ -31,7 +32,7 @@ class Lex_Parser
 	protected $conditional_end_regex = '';
 	protected $conditional_data = array();
 
-	protected $extractions = array(
+	protected static $extractions = array(
 		'noparse' => array(),
 	);
 
@@ -69,7 +70,13 @@ class Lex_Parser
 			$text = $this->parse_callback_tags($text, $data, $callback);
 		}
 
-		$text = $this->inject_extractions($text);
+		// To ensure that {{ noparse }} is never parsed even during consecutive parse calls
+		// set $cumulative_noparse to true and use Lex_Parser::inject_noparse($text); immediately
+		// before the final output is sent to the browser
+		if ( ! $this->cumulative_noparse)
+		{
+			$text = $this->inject_extractions($text);
+		}
 
 		return $text;
 	}
@@ -182,7 +189,8 @@ class Lex_Parser
 			$name = $match[1][0];
 			if (isset($match[2]))
 			{
-				$parameters = $this->parse_parameters($match[2][0], $data, $callback);
+				$raw_params = $this->inject_extractions($match[2][0], '__cond_str');
+				$parameters = $this->parse_parameters($raw_params, $data, $callback);
 			}
 
 			$content = '';
@@ -202,6 +210,7 @@ class Lex_Parser
 				$replacement = $this->value_to_literal($replacement);
 			}
 			$text = preg_replace('/'.preg_quote($tag, '/').'/m', addcslashes($replacement, '\\$'), $text, 1);
+			
 		}
 
 		return $text;
@@ -230,11 +239,11 @@ class Lex_Parser
 		foreach ($matches as $match)
 		{
 			$this->in_condition = true;
-			
+
 			$condition = $match[2];
 
 			// Extract all literal string in the conditional to make it easier
-			if (preg_match_all('/(?!\{.*)(["\']).*?(?<!\\\\)\1(?!.*\})/', $condition, $str_matches))
+			if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches))
 			{
 				foreach ($str_matches[0] as $m)
 				{
@@ -281,6 +290,43 @@ class Lex_Parser
 		}
 
 		return $glue;
+	}
+
+	/**
+	 * Sets the noparse style. Immediate or cumulative.
+	 *
+	 * @param	bool $mode
+	 * @return	void
+	 */
+	public function cumulative_noparse($mode)
+	{
+		$this->cumulative_noparse = $mode;
+	}
+
+	/**
+	 * Injects noparse extractions.
+	 *
+	 * This is so that multiple parses can store noparse
+	 * extractions and all noparse can then be injected right
+	 * before data is displayed.
+	 *
+	 * @param	string	$text	Text to inject into
+	 * @return	string
+	 */
+	public function inject_noparse($text)
+	{
+		if (isset(Lex_Parser::$extractions['noparse']))
+		{
+			foreach (Lex_Parser::$extractions['noparse'] AS $hash => $replacement)
+			{
+				if (strpos($text, "noparse_{$hash}") !== FALSE)
+				{
+					$text = str_replace("noparse_{$hash}", $replacement, $text);
+				}
+			}
+		}
+
+		return $text;
 	}
 
 	/**
@@ -451,7 +497,7 @@ class Lex_Parser
 	protected function create_extraction($type, $extraction, $replacement, $text)
 	{
 		$hash = md5($replacement);
-		$this->extractions[$type][$hash] = $replacement;
+		Lex_Parser::$extractions[$type][$hash] = $replacement;
 
 		return str_replace($extraction, "{$type}_{$hash}", $text);
 	}
@@ -466,26 +512,32 @@ class Lex_Parser
 	{
 		if ($type === null)
 		{
-			foreach ($this->extractions as $type => $extractions)
+			foreach (Lex_Parser::$extractions as $type => $extractions)
 			{
 				foreach ($extractions as $hash => $replacement)
 				{
-					$text = str_replace("{$type}_{$hash}", $replacement, $text);
-					unset($this->extractions[$type][$hash]);
+					if (strpos($text, "{$type}_{$hash}") !== false)
+					{
+						$text = str_replace("{$type}_{$hash}", $replacement, $text);
+						unset(Lex_Parser::$extractions[$type][$hash]);
+					}
 				}
 			}
 		}
 		else
 		{
-			if ( ! isset($this->extractions[$type]))
+			if ( ! isset(Lex_Parser::$extractions[$type]))
 			{
 				return $text;
 			}
 
-			foreach ($this->extractions[$type] as $hash => $replacement)
+			foreach (Lex_Parser::$extractions[$type] as $hash => $replacement)
 			{
-				$text = str_replace("{$type}_{$hash}", $replacement, $text);
-				unset($this->extractions[$type][$hash]);
+				if (strpos($text, "{$type}_{$hash}") !== false)
+				{
+					$text = str_replace("{$type}_{$hash}", $replacement, $text);
+					unset(Lex_Parser::$extractions[$type][$hash]);
+				}
 			}
 		}
 
@@ -545,7 +597,13 @@ class Lex_Parser
 	protected function parse_php($text)
 	{
 		ob_start();
-		echo eval('?>'.$text.'<?php ');
+		$result = eval('?>'.$text.'<?php ');
+
+		if ($result === false)
+		{
+			echo '<br />You have a syntax error in your Lex tags. The snippet of text that contains the error has been output below:<br />';
+			exit(str_replace(array('?>', '<?php '), '', $text));
+		}
 
 		return ob_get_clean();
 	}
