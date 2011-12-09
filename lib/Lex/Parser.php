@@ -130,7 +130,6 @@ class Lex_Parser
 						$looped_text .= $str;
 					}
 					$text = preg_replace('/'.preg_quote($match[0][0], '/').'/m', addcslashes($looped_text, '\\$'), $text, 1);
-
 				}
 			}
 		}
@@ -211,7 +210,7 @@ class Lex_Parser
 				$replacement = $this->value_to_literal($replacement);
 			}
 			$text = preg_replace('/'.preg_quote($tag, '/').'/m', addcslashes($replacement, '\\$'), $text, 1);
-
+			
 		}
 
 		return $text;
@@ -644,7 +643,7 @@ class Lex_Parser
 		$parameters = $this->inject_extractions($parameters, '__param_str');
 		$this->in_condition = false;
 
-		if (preg_match_all('/(.*?)\s*=\s*(\'|\")(.*?)\\2/is', trim($parameters), $matches))
+		if (preg_match_all('/(.*?)\s*=\s*(\'|"|&#?\w+;)(.*?)\2/s', trim($parameters), $matches))
 		{
 			$return = array();
 			foreach ($matches[1] as $i => $attr)
