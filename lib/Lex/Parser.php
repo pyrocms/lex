@@ -35,6 +35,8 @@ class Lex_Parser
 	protected static $extractions = array(
 		'noparse' => array(),
 	);
+	
+	protected static $data = null;
 
 	/**
 	 * The main Lex parser method.  Essentially acts as dispatcher to
@@ -49,6 +51,10 @@ class Lex_Parser
 	{
 		$this->setup_regex();
 
+		Lex_Parser::$data == null AND Lex_Parser::$data = $data;
+		
+		$data = array_merge(Lex_Parser::$data, $data);
+		
 		// The parse_conditionals method executes any PHP in the text, so clean it up.
 		if ( ! $allow_php)
 		{
@@ -57,19 +63,20 @@ class Lex_Parser
 
 		$text = $this->parse_comments($text);
 		$text = $this->extract_noparse($text);
-		$text = $this->extract_looped_tags($text);
+		$text = $this->extract_looped_tags($text, $data, $callback);
 
 		// Order is important here.  We parse conditionals first as to avoid
 		// unnecessary code from being parsed and executed.
 		$text = $this->parse_conditionals($text, $data, $callback);
 		$text = $this->inject_extractions($text, 'looped_tags');
 		$text = $this->parse_variables($text, $data, $callback);
-
+		$text = $this->inject_extractions($text, 'callback_blocks');
+		
 		if ($callback)
 		{
 			$text = $this->parse_callback_tags($text, $data, $callback);
 		}
-
+		
 		// To ensure that {{ noparse }} is never parsed even during consecutive parse calls
 		// set $cumulative_noparse to true and use Lex_Parser::inject_noparse($text); immediately
 		// before the final output is sent to the browser
@@ -104,6 +111,7 @@ class Lex_Parser
 	public function parse_variables($text, $data, $callback = null)
 	{
 		$this->setup_regex();
+		
 		/**
 		 * $data_matches[][0][0] is the raw data loop tag
 		 * $data_matches[][0][1] is the offset of raw data loop tag
@@ -130,6 +138,10 @@ class Lex_Parser
 						$looped_text .= $str;
 					}
 					$text = preg_replace('/'.preg_quote($match[0][0], '/').'/m', addcslashes($looped_text, '\\$'), $text, 1);
+				}
+				else
+				{
+					$text = $this->create_extraction('callback_blocks', $match[0][0], $match[0][0], $text);
 				}
 			}
 		}
@@ -461,14 +473,14 @@ class Lex_Parser
 
 		return $text;
 	}
-
+	
 	/**
 	 * Extracts the looped tags so that we can parse conditionals then re-inject.
 	 *
 	 * @param   string  $text  The text to extract from
 	 * @return  string
 	 */
-	protected function extract_looped_tags($text)
+	protected function extract_looped_tags($text, $data = array(), $callback = null)
 	{
 		/**
 		 * $matches[][0] is the raw match
@@ -477,7 +489,14 @@ class Lex_Parser
 		{
 			foreach ($matches as $match)
 			{
-				$text = $this->create_extraction('looped_tags', $match[0], $match[0], $text);
+				if ($this->parse_parameters($match[2], $data, $callback))
+				{
+					$text = $this->create_extraction('callback_blocks', $match[0], $match[0], $text);
+				}
+				else
+				{
+					$text = $this->create_extraction('looped_tags', $match[0], $match[0], $text);
+				}
 			}
 		}
 
