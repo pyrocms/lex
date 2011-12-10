@@ -103,7 +103,7 @@ You can add comments to your templates by wrapping the text in `{{# #}}`.
 
 **Example**
 
-    {{# This will not bt parsed or shown in the resulting HTML #}}
+    {{# This will not be parsed or shown in the resulting HTML #}}
 
     {{#
         They can be multi-line too.
