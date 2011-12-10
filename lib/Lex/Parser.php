@@ -224,6 +224,13 @@ class Lex_Parser
 			{
 				$content = substr($temp_text, 0, $match[0][1]);
 				$tag .= $content.$match[0][0];
+				
+				// Is there a nested block under this one existing with the same name?
+				if (preg_match($this->callback_block_regex, $content.$match[0][0], $nested_matches))
+				{
+					$nested_content = preg_replace('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', '', $nested_matches[0]);
+					$content = $this->create_extraction('nested_looped_tags', $nested_content, $nested_content, $content);
+				}
 			}
 
 			$replacement = call_user_func_array($callback, array($name, $parameters, $content));
@@ -233,7 +240,7 @@ class Lex_Parser
 				$replacement = $this->value_to_literal($replacement);
 			}
 			$text = preg_replace('/'.preg_quote($tag, '/').'/m', addcslashes($replacement, '\\$'), $text, 1);
-			
+			$text = $this->inject_extractions($text, 'nested_looped_tags');
 		}
 
 		return $text;

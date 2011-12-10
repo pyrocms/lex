@@ -16,7 +16,7 @@
 	{{ endif }}
 
 		<ul id="navigation">
-			{{template:partial name="navigation" group="{{nav_group}}"}}
+			{{template:partial name="navigation" group=nav_group}}
 
 			{{/template:partial}}
 		</ul>
