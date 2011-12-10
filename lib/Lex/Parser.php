@@ -51,9 +51,18 @@ class Lex_Parser
 	{
 		$this->setup_regex();
 
-		Lex_Parser::$data == null AND Lex_Parser::$data = $data;
-		
-		$data = array_merge(Lex_Parser::$data, $data);
+		// Is this the first time parse() is called?
+		if( ! Lex_Parser::$data)
+		{
+			// Let's store the local data array for later use.
+			Lex_Parser::$data = $data;
+		}
+		else
+		{
+			// Let's merge the current data array with the local scope variables
+			// So you can call local variables from within blocks.
+			$data = array_merge(Lex_Parser::$data, $data);
+		}
 		
 		// The parse_conditionals method executes any PHP in the text, so clean it up.
 		if ( ! $allow_php)
@@ -139,8 +148,10 @@ class Lex_Parser
 					}
 					$text = preg_replace('/'.preg_quote($match[0][0], '/').'/m', addcslashes($looped_text, '\\$'), $text, 1);
 				}
-				else
+				else // It's a callback block.
 				{
+					// Let's extract it so it doesn't conflict 
+					// with the local scope variables in the next step.
 					$text = $this->create_extraction('callback_blocks', $match[0][0], $match[0][0], $text);
 				}
 			}
@@ -489,8 +500,11 @@ class Lex_Parser
 		{
 			foreach ($matches as $match)
 			{
+				// Does this callback block contain parameters?
 				if ($this->parse_parameters($match[2], $data, $callback))
 				{
+					// Let's extract it so it doesn't conflict with local variables when
+					// parse_variables() is called.
 					$text = $this->create_extraction('callback_blocks', $match[0], $match[0], $text);
 				}
 				else
@@ -601,6 +615,10 @@ class Lex_Parser
 				}
 
 				$data = $data->{$key_part};
+			}
+			else
+			{
+				return $default;
 			}
 		}
 
