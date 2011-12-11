@@ -52,7 +52,7 @@ class Lex_Parser
 		$this->setup_regex();
 
 		// Is this the first time parse() is called?
-		if( ! Lex_Parser::$data)
+		if (Lex_Parser::$data === null)
 		{
 			// Let's store the local data array for later use.
 			Lex_Parser::$data = $data;
