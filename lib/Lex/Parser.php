@@ -37,7 +37,8 @@ class Lex_Parser
 	);
 	
 	protected static $data = null;
-
+	protected static $callback_data = array();
+	
 	/**
 	 * The main Lex parser method.  Essentially acts as dispatcher to
 	 * all of the helper parser methods.
@@ -62,8 +63,13 @@ class Lex_Parser
 			// Let's merge the current data array with the local scope variables
 			// So you can call local variables from within blocks.
 			$data = array_merge(Lex_Parser::$data, $data);
+			
+			// Since this is not the first time parse() is called, it's most definately a callback,
+			// let's store the current callback data with the the local data
+			// so we can use it straight after a callback is called.
+			Lex_Parser::$callback_data = $data;
 		}
-		
+
 		// The parse_conditionals method executes any PHP in the text, so clean it up.
 		if ( ! $allow_php)
 		{
@@ -213,7 +219,7 @@ class Lex_Parser
 			if (isset($match[2]))
 			{
 				$raw_params = $this->inject_extractions($match[2][0], '__cond_str');
-				$parameters = $this->parse_parameters($raw_params, $data, $callback);
+				$parameters = $this->parse_parameters($raw_params, array_merge($data, Lex_Parser::$callback_data), $callback);
 			}
 
 			$content = '';
