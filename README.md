@@ -103,7 +103,7 @@ You can add comments to your templates by wrapping the text in `{{# #}}`.
 
 **Example**
 
-    {{# This will not bt parsed or shown in the resulting HTML #}}
+    {{# This will not be parsed or shown in the resulting HTML #}}
 
     {{#
         They can be multi-line too.
@@ -185,6 +185,7 @@ In the following example, let's assume you have the following array/object of va
                 'name' => 'Lex',
                 'contributors' => array(
                     array('name' => 'Dan'),
+                    array('name' => 'Ziggy')
                 ),
             ),
         ),
@@ -287,3 +288,79 @@ The callback must also return a string, which will replace the tag in the conten
         // Do something useful
         return $result;
     }
+
+Recursive Callback Blocks
+-------------
+
+The recursive callback tag allows you to loop through a childs element with the same output as the block.
+
+**Example**
+	
+	function my_callback($name, $attributes, $content)
+	{
+		$data = array(
+				'url' 		=> 'url_1', 
+				'title' 	=> 'First Title',
+				'children'	=> array(
+					array(
+						'url' 		=> 'url_2',
+						'title'		=> 'Second Title',
+						'children' 	=> array(
+							array(
+								'url' 	=> 'url_3',
+								'title'	=> 'Third Title'
+							)
+						)
+					),
+					array(
+						'url'		=> 'url_4',
+						'title'		=> 'Fourth Title',
+						'children'	=> array(
+							array(
+								'url' 	=> 'url_5',
+								'title'	=> 'Fifth Title'
+							)
+						)
+					)
+				)
+		);
+		
+		$parser = new Lex_Parser();
+		return $parser->parse($content, $data);
+	}
+	
+
+In the template set it up as follows.
+	
+	<ul>
+		{{ navigation }}
+			<li><a href="{{ url }}">{{ title }}</a>
+				{{ if children }}
+					<ul>
+						{{ *recursive children* }}
+					</ul>
+				{{ endif }}
+			</li>
+		{{ /navigation }}
+	</ul>
+
+
+**Result**
+
+	<ul>
+		<li><a href="url_1">First Title</a>
+			<ul>
+				<li><a href="url_2">Second Title</a>
+					<ul>
+						<li><a href="url_3">Third Title</a></li>
+					</ul>
+				</li>
+				
+				<li><a href="url_4">Fourth Title</a>
+					<ul>
+						<li><a href="url_5">Fifth Title</a></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
