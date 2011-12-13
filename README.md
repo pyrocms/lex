@@ -165,7 +165,7 @@ A Looped Variable tag is a closed tag which wraps the looped content.  The closi
 
     {{ projects }} Some Content Here {{/ projects }}
 
-The looped content is what is contained between the opening and closing tags.  This content is looped through and outputted for every item in the looped array.
+The looped content is what is contained between the opening and closing tags.  This content is looped through and output for every item in the looped array.
 
 When in a Looped Tag you have access to any sub-variables for the current element in the loop.
 
@@ -185,7 +185,8 @@ In the following example, let's assume you have the following array/object of va
                 'name' => 'Lex',
                 'contributors' => array(
                     array('name' => 'Dan'),
-                    array('name' => 'Ziggy')
+                    array('name' => 'Ziggy'),
+					array('name' => 'Jerel')
                 ),
             ),
         ),
@@ -292,7 +293,8 @@ The callback must also return a string, which will replace the tag in the conten
 Recursive Callback Blocks
 -------------
 
-The recursive callback tag allows you to loop through a childs element with the same output as the block.
+The recursive callback tag allows you to loop through a child's element with the same output as the main block. It is triggered
+by using the ***recursive*** keyword along with the array key name. The two words must be surrounded by asterisks as shown in the example below.
 
 **Example**
 	
@@ -330,7 +332,9 @@ The recursive callback tag allows you to loop through a childs element with the 
 	}
 	
 
-In the template set it up as follows.
+In the template set it up as shown below. If `children` is not empty Lex will
+parse the contents between the `{{ navigation }}` tags again for each of `children`'s arrays.
+The resulting text will then be inserted in place of `{{ *recursive children* }}`. This can be done many levels deep.
 	
 	<ul>
 		{{ navigation }}
