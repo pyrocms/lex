@@ -239,7 +239,8 @@ class Lex_Parser
 				$tag .= $content.$match[0][0];
 				
 				// Is there a nested block under this one existing with the same name?
-				if (preg_match($this->callback_block_regex, $content.$match[0][0], $nested_matches))
+				$nested_regex = '/\{\{\s*('.preg_quote($name, '/').')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+				if (preg_match($nested_regex, $content.$match[0][0], $nested_matches))
 				{
 					$nested_content = preg_replace('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', '', $nested_matches[0]);
 					$content = $this->create_extraction('nested_looped_tags', $nested_content, $nested_content, $content);
