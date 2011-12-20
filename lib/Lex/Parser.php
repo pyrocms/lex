@@ -547,6 +547,10 @@ class Lex_Parser
 		$this->conditional_end_regex = '/\{\{\s*(\/if|endif)\s*\}\}/ms';
 
 		$this->regex_setup = true;
+		
+		// This is important, it's pretty unclear by the documentation
+		// what the default value is on <= 5.3.6
+		ini_set('pcre.backtrack_limit', 1000000);
 	}
 
 	/**
