@@ -80,6 +80,9 @@ Scope Glue is/are the character(s) used by Lex to trigger a scope change.  A sco
 
 By default a dot (`.`) is used as the Scope Glue, although you can select any character(s).
 
+`Setting Scope Glue`
+
+    $parser->scopeGlue(':');
 
 Whitespace
 ----------
@@ -216,7 +219,9 @@ As you can see inside each project element we have access to that project's assi
 Conditionals
 -------------
 
-Conditionals in Lex are simple and easy to use.  It allows for the standard `if`, `elseif`, and `else`.
+Conditionals in Lex are simple and easy to use.  It allows for the standard `if`, `elseif`, and `else` but it also adds `unless` and `elseunless`.
+
+The `unless` and `elseunless` are the EXACT same as using `{{ if ! (expression) }}` and `{{ elseif ! (expression) }}` respectively.  They are added as a nicer, more understandable syntax.
 
 All `if` blocks must be closed with the `{{ endif }}` tag.
 
@@ -242,6 +247,14 @@ A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!
         <p>My name is {{real_name.first}} {{real_name.last}}</p>
     {{ else }}
         <p>My name is John Doe</p>
+    {{ endif }}
+    
+    {{ unless age > 21 }}
+        <p>You are to young.</p>
+    {{ elseunless age < 80 }}
+        <p>You are to old...it'll kill ya!</p>
+    {{ else }}
+        <p>Go ahead and drink!</p>
     {{ endif }}
 
 

@@ -254,7 +254,7 @@ class Parser
 
         /**
          * $matches[][0] = Full Match
-         * $matches[][1] = Either 'if', 'unless', 'elseif', 'unlessif'
+         * $matches[][1] = Either 'if', 'unless', 'elseif', 'elseunless'
          * $matches[][2] = Condition
          */
         foreach ($matches as $match) {
@@ -279,7 +279,17 @@ class Parser
             // Re-inject any strings we extracted
             $condition = $this->injectExtractions($condition, '__cond_str');
 
-            $conditional = '<?php '.$match[1].' ('.$condition.'): ?>';
+            $conditional = '<?php ';
+
+            if ($match[1] == 'unless') {
+                $conditional .= 'if ( ! ('.$condition.'))';
+            } elseif ($match[1] == 'elseunless') {
+                $conditional .= 'elseif ( ! ('.$condition.'))';
+            } else {
+                $conditional .= $match[1].' ('.$condition.')';
+            }
+
+            $conditional .= ': ?>';
 
             $text = preg_replace('/'.preg_quote($match[0], '/').'/m', addcslashes($conditional, '\\$'), $text, 1);
         }
@@ -491,7 +501,7 @@ class Parser
 
         $this->noparseRegex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
-        $this->conditionalRegex = '/\{\{\s*(if|elseif)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
+        $this->conditionalRegex = '/\{\{\s*(if|unless|elseif|elseunless)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
         $this->conditionalElseRegex = '/\{\{\s*else\s*\}\}/ms';
         $this->conditionalEndRegex = '/\{\{\s*endif\s*\}\}/ms';
 
