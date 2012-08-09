@@ -3,55 +3,55 @@ Lex
 
 Lex is a lightweight template parser.
 
-
-_Lex is released under the MIT License and is Copyrighted 2011 Dan Horrigan._
+Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrigan._
 
 Basic Usage
 ===========
 
-Including Lex
+Using Lex
 -------------
 
-Lex includes a basic autoloader to load it's classes.
+Lex is a Composer package.  To use it, simply add it to the `require` section of you `composer.json` file.
 
-    include 'lib/Lex/Autoloader.php';
-    Lex_Autoloader::register();
+After adding Lex to your `composer.json` file, simply use the class as normal.
+
+    $parser = new Lex\Parser();
 
 Using Lex
 ---------
 
 Basic parsing of a file:
 
-    $parser = new Lex_Parser();
+    $parser = new Lex\Parser();
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 
 You can also set the Scope Glue (see "Scope Glue" under Syntax below):
 
-    $parser = new Lex_Parser();
-    $parser->scope_glue(':');
+    $parser = new Lex\Parser();
+    $parser->scopeGlue(':');
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 	
 To allow noparse extractions to accumulate so they don't get parsed by a later call to the parser set cumulative_noparse to true:
 
-    $parser = new Lex_Parser();
+    $parser = new Lex\Parser();
     $parser->cumulative_noparse(true);
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 	// Second parse on the same text somewhere else in your app
 	$template = $parser->parse($template, $data);
 	// Now that all parsing is done we inject the contents between the {{ noparse }} tags back into the template text
-	Lex_Parser::inject_noparse($template);
+	Lex\Parser::injectNoparse($template);
 
-If you only want to parse a data array and not worry about callback tags or comments, you can do use the `parse_variables()` method:
+If you only want to parse a data array and not worry about callback tags or comments, you can do use the `parseVariables()` method:
 
-    $parser = new Lex_Parser();
-    $template = $parser->parse_variables(file_get_contents('template.lex'), $data);
+    $parser = new Lex\Parser();
+    $template = $parser->parseVariables(file_get_contents('template.lex'), $data);
 
 
 ### PHP in Templates
 
 By default PHP is encoded, and not executed.  This is for security reasons.  However, you may at times want to enable it.  To do that simply send `true` as the fourth parameter to your `parse()` call.
 
-    $parser = new Lex_Parser();
+    $parser = new Lex\Parser();
     $template = $parser->parse(file_get_contents('template.lex'), $data, $callback, true);
 
 Syntax
@@ -327,7 +327,7 @@ by using the ***recursive*** keyword along with the array key name. The two word
 				)
 		);
 		
-		$parser = new Lex_Parser();
+		$parser = new Lex\Parser();
 		return $parser->parse($content, $data);
 	}
 	

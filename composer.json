@@ -1,0 +1,7 @@
+{
+    "name": "fuel/lex",
+    "type": "library",
+    "description": "A lightweight template parser you can use to create your own templating system.",
+    "keywords": ["template","parser"],
+    "license": "MIT",
+}
