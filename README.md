@@ -37,10 +37,10 @@ You can also set the Scope Glue (see "Scope Glue" under Syntax below):
     $parser->scopeGlue(':');
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 	
-To allow noparse extractions to accumulate so they don't get parsed by a later call to the parser set cumulative_noparse to true:
+To allow noparse extractions to accumulate so they don't get parsed by a later call to the parser set cumulativeNoparse to true:
 
     $parser = new Lex\Parser();
-    $parser->cumulative_noparse(true);
+    $parser->cumulativeNoparse(true);
     $template = $parser->parse(file_get_contents('template.lex'), $data);
 	// Second parse on the same text somewhere else in your app
 	$template = $parser->parse($template, $data);
