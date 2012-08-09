@@ -272,7 +272,7 @@ class Parser
             $condition = preg_replace_callback('/\b('.$this->variableRegex.')\b/', array($this, 'processConditionVar'), $condition);
 
             if ($callback) {
-                $condition = preg_replace('/\b(?!\{\s*)('.$this->callback_name_regex.')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
+                $condition = preg_replace('/\b(?!\{\s*)('.$this->callbackNameRegex.')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
             }
 
@@ -481,7 +481,7 @@ class Parser
         $glue = preg_quote($this->scopeGlue, '/');
 
         $this->variableRegex = $glue === '\\.' ? '[a-zA-Z0-9_'.$glue.']+' : '[a-zA-Z0-9_\.'.$glue.']+';
-        $this->callback_name_regex = $this->variableRegex.$glue.$this->variableRegex;
+        $this->callbackNameRegex = $this->variableRegex.$glue.$this->variableRegex;
         $this->variableLoopRegex = '/\{\{\s*('.$this->variableRegex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
         $this->variableTagRegex = '/\{\{\s*('.$this->variableRegex.')\s*\}\}/m';
 
@@ -681,7 +681,7 @@ class Parser
             $parameters
         );
         if ($callback) {
-            $parameters = preg_replace('/(.*?\s*=\s*(?!\{\s*)(?!__))('.$this->callback_name_regex.')(?!\s*\})\b/', '$1{$2}', $parameters);
+            $parameters = preg_replace('/(.*?\s*=\s*(?!\{\s*)(?!__))('.$this->callbackNameRegex.')(?!\s*\})\b/', '$1{$2}', $parameters);
             $parameters = $this->parseCallbackTags($parameters, $data, $callback);
         }
 
