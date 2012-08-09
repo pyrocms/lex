@@ -1,7 +1,7 @@
 {
     "name": "fuel/lex",
     "type": "library",
-    "description": "A lightweight template parser you can use to create your own templating system.",
+    "description": "A lightweight template parser.",
     "keywords": ["template","parser"],
     "license": "MIT",
     "authors": [
