@@ -249,7 +249,7 @@ A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!
 
 Using a callback tag in a conditional is simple.  Use it just like any other variable except for one exception.  When you need to provide attributes for the callback tag, you are required to surround the tag with a ***single*** set of braces (you can optionally use them for all callback tags).
 
-**Note: When using a braces inside of a conditional there **CANNOT** be any whitespace after the opening brace, or before the closing brace.  Doing so will result in errors.**
+**Note: When using a braces inside of a conditional there CANNOT be any whitespace after the opening brace, or before the closing brace.  Doing so will result in errors.**
 
 **Examples**
 
