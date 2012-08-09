@@ -4,5 +4,14 @@
     "description": "A lightweight template parser you can use to create your own templating system.",
     "keywords": ["template","parser"],
     "license": "MIT",
-    "author": "Dan Horrigan <dan@dhorrigan.com>"
+    "authors": [
+        {
+            "name": "Dan Horrigan",
+            "email": "dan@dhorrigan.com",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
 }
