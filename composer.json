@@ -3,5 +3,6 @@
     "type": "library",
     "description": "A lightweight template parser you can use to create your own templating system.",
     "keywords": ["template","parser"],
-    "license": "MIT"
+    "license": "MIT",
+    "author": "Dan Horrigan <dan@dhorrigan.com>"
 }
