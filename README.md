@@ -218,7 +218,7 @@ Conditionals
 
 Conditionals in Lex are simple and easy to use.  It allows for the standard `if`, `elseif`, and `else`.
 
-All `if` blocks must be closed with either a `{{ /if }}` or `{{ endif }}` tag.
+All `if` blocks must be closed with the `{{ endif }}` tag.
 
 Variables inside of if Conditionals, do not, and should not, use the Tag delimeters (it will cause wierd issues with your output).
 

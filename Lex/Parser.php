@@ -493,7 +493,7 @@ class Parser
 
         $this->conditionalRegex = '/\{\{\s*(if|elseif)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
         $this->conditionalElseRegex = '/\{\{\s*else\s*\}\}/ms';
-        $this->conditionalEndRegex = '/\{\{\s*(\/if|endif)\s*\}\}/ms';
+        $this->conditionalEndRegex = '/\{\{\s*endif\s*\}\}/ms';
 
         $this->regexSetup = true;
 
