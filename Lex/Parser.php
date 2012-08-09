@@ -304,7 +304,7 @@ class Parser
     public function parseRecursives($text, $orig_text, $callback)
     {
         // Is there a {{ *recursive [array_key]* }} tag here, let's loop through it.
-        if (preg_match($this->recursive_regex, $text, $match)) {
+        if (preg_match($this->recursiveRegex, $text, $match)) {
             $array_key = $match[1];
             $tag = $match[0];
             $next_tag = null;
@@ -485,9 +485,9 @@ class Parser
         $this->variableLoopRegex = '/\{\{\s*('.$this->variableRegex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
         $this->variableTagRegex = '/\{\{\s*('.$this->variableRegex.')\s*\}\}/m';
 
-        $this->callback_block_regex = '/\{\{\s*('.$this->variableRegex.')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+        $this->callbackBlockRegex = '/\{\{\s*('.$this->variableRegex.')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 
-        $this->recursive_regex = '/\{\{\s*\*recursive\s*('.$this->variableRegex.')\*\s*\}\}/ms';
+        $this->recursiveRegex = '/\{\{\s*\*recursive\s*('.$this->variableRegex.')\*\s*\}\}/ms';
 
         $this->noparseRegex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
@@ -534,7 +534,7 @@ class Parser
         /**
          * $matches[][0] is the raw match
          */
-        if (preg_match_all($this->callback_block_regex, $text, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all($this->callbackBlockRegex, $text, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 // Does this callback block contain parameters?
                 if ($this->parseParameters($match[2], $data, $callback)) {
