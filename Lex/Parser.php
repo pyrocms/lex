@@ -161,7 +161,6 @@ class Parser
         if (preg_match_all($this->variableTagRegex, $text, $data_matches)) {
             foreach ($data_matches[1] as $index => $var) {
                 if (($val = $this->getVariable($var, $data)) !== null) {
-                    var_dump($val);
                     $text = str_replace($data_matches[0][$index], $val, $text);
                 }
             }
