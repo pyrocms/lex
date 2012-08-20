@@ -20,4 +20,11 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $scopeGlue->setAccessible(true);
         $this->assertEquals('~', $scopeGlue->getValue($parser));
     }
+
+    public function testCanGetScopeGlue()
+    {
+        $parser = new Lex\Parser();
+        $parser->scopeGlue('~');
+        $this->assertEquals('~', $parser->scopeGlue());
+    }
 }

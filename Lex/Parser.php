@@ -376,7 +376,7 @@ class Parser
             $this->scopeGlue = $glue;
         }
 
-        return $glue;
+        return $this->scopeGlue;
     }
 
     /**
