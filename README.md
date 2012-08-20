@@ -5,6 +5,22 @@ Lex is a lightweight template parser.
 
 _Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrigan._
 
+Change Log
+==========
+
+2.0.0
+-----
+
+* All code now follows PSR-0, 1 and 2.
+* Lex_Parser has been moved to the `Lex` namespace and renamed to `Parser`.
+* Lex_Autoloader has been removed.  It is now PSR-0 compliant.
+* Added the support for `{{ unless }}` and `{{ elseunless }}`.
+
+2.0.1
+-----
+
+* Fixed a bug where variables with a "falsey" (e.g. 0, "0", -1, etc.) value were not displayed.
+
 Basic Usage
 ===========
 
@@ -15,7 +31,7 @@ Lex is a Composer package named `fuel/lex`.  To use it, simply add it to the `re
 
     {
         "require": {
-            "fuel/lex": "2.0.0"
+            "fuel/lex": "2.0.1"
         }
     }
 
