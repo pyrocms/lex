@@ -21,6 +21,11 @@ Change Log
 
 * Fixed a bug where variables with a "falsey" (e.g. 0, "0", -1, etc.) value were not displayed.
 
+2.0.2
+-----
+
+* Fixed a bug introduced in 2.0.1 where NULL variables were not being displayed.
+
 Basic Usage
 ===========
 
@@ -31,7 +36,7 @@ Lex is a Composer package named `fuel/lex`.  To use it, simply add it to the `re
 
     {
         "require": {
-            "fuel/lex": "2.0.1"
+            "fuel/lex": "2.0.2"
         }
     }
 
