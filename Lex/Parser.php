@@ -460,7 +460,7 @@ class Parser
     protected function valueToLiteral($value)
     {
         if (is_object($value) and is_callable(array($value, '__toString'))) {
-            return "'".addslashes((string) $value)."'";
+            return var_export((string) $value, true);
         } elseif (is_array($value)) {
             return !empty($value) ? "true" : "false";
         } else {
