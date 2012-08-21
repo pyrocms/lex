@@ -459,22 +459,12 @@ class Parser
      */
     protected function valueToLiteral($value)
     {
-        if ($value === null) {
-            return "null";
-        } elseif ($value === true) {
-            return "true";
-        } elseif ($value === false) {
-            return "false";
-        } elseif (is_numeric($value)) {
-            return '"'.$value.'"';
-        } elseif (is_string($value)) {
-            return '"'.addslashes($value).'"';
-        } elseif (is_object($value) and is_callable(array($value, '__toString'))) {
-            return '"'.addslashes((string) $value).'"';
+        if (is_object($value) and is_callable(array($value, '__toString'))) {
+            return "'".addslashes((string) $value)."'";
         } elseif (is_array($value)) {
             return !empty($value) ? "true" : "false";
         } else {
-            return $value;
+            return var_export($value, true);
         }
     }
 

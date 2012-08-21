@@ -28,6 +28,34 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('~', $parser->scopeGlue());
     }
 
+    public function testValueToLiteral()
+    {
+        $parser = new Lex\Parser();
+        $method = new ReflectionMethod($parser, 'valueToLiteral');
+
+        $this->assertTrue($method->isProtected());
+
+        $method->setAccessible(true);
+
+        $this->assertSame($method->invoke($parser, null), "NULL");
+        $this->assertSame($method->invoke($parser, true), "true");
+        $this->assertSame($method->invoke($parser, false), "false");
+        $this->assertSame($method->invoke($parser, "some_string"), "'some_string'");
+        $this->assertSame($method->invoke($parser, 24), "24");
+        $this->assertSame($method->invoke($parser, array('foo')), "true");
+        $this->assertSame($method->invoke($parser, array()), "false");
+
+        $mock = $this->getMock('stdClass', array('__toString'));
+        $mock->expects($this->any())
+             ->method('__toString')
+             ->will($this->returnValue('obj_string'));
+
+        $this->assertSame($method->invoke($parser, $mock), "'obj_string'");
+    }
+
+    /**
+     * Regression test for https://www.pyrocms.com/forums/topics/view/19686
+     */
     public function testFalseyVariableValuesParseProperly()
     {
         $data = array(
