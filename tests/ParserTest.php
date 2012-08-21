@@ -39,8 +39,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
             'simplexml_empty_node' => simplexml_load_string('<main></main>'),
         );
 
-        $text = "{{zero_num}} {{zero_string}} {{zero_float}} {{empty_string}} {{null_value}} {{simplexml_empty_node}}";
-        $expected = '0 0 0   ';
+        $text = "{{zero_num}},{{zero_string}},{{zero_float}},{{empty_string}},{{null_value}},{{simplexml_empty_node}}";
+        $expected = '0,0,0,,,';
 
         $parser = new Lex\Parser();
 
