@@ -37,20 +37,20 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $method->setAccessible(true);
 
-        $this->assertSame($method->invoke($parser, null), "NULL");
-        $this->assertSame($method->invoke($parser, true), "true");
-        $this->assertSame($method->invoke($parser, false), "false");
-        $this->assertSame($method->invoke($parser, "some_string"), "'some_string'");
-        $this->assertSame($method->invoke($parser, 24), "24");
-        $this->assertSame($method->invoke($parser, array('foo')), "true");
-        $this->assertSame($method->invoke($parser, array()), "false");
+        $this->assertSame("NULL", $method->invoke($parser, null));
+        $this->assertSame("true", $method->invoke($parser, true));
+        $this->assertSame("false", $method->invoke($parser, false));
+        $this->assertSame("'some_string'", $method->invoke($parser, "some_string"));
+        $this->assertSame("24", $method->invoke($parser, 24));
+        $this->assertSame("true", $method->invoke($parser, array('foo')));
+        $this->assertSame("false", $method->invoke($parser, array()));
 
         $mock = $this->getMock('stdClass', array('__toString'));
         $mock->expects($this->any())
              ->method('__toString')
              ->will($this->returnValue('obj_string'));
 
-        $this->assertSame($method->invoke($parser, $mock), "'obj_string'");
+        $this->assertSame("'obj_string'", $method->invoke($parser, $mock));
     }
 
     /**
@@ -74,6 +74,6 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $result = $parser->parseVariables($text, $data);
 
-        $this->assertEquals($result, $expected);
+        $this->assertEquals($expected, $result);
     }
 }
