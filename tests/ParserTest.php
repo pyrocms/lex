@@ -4,53 +4,86 @@ include __DIR__.'/../Lex/Parser.php';
 
 class ParserTest extends PHPUnit_Framework_TestCase
 {
-    public function testCanCreateParser()
+
+    public function setUp()
     {
-        $this->assertInstanceOf('Lex\\Parser', new Lex\Parser());
+        $this->parser = new Lex\Parser();
+    }
+
+    public function templateDataProvider()
+    {
+        return array(
+            array(
+                array(
+                    'name' => 'Lex',
+                    'filters' => array(
+                        'enable' => true,
+                    ),
+                ),
+            ),
+        );
     }
 
     public function testCanSetScopeGlue()
     {
-        $parser = new Lex\Parser();
-        $parser->scopeGlue('~');
-        $scopeGlue = new ReflectionProperty($parser, 'scopeGlue');
+        $this->parser->scopeGlue('~');
+        $scopeGlue = new ReflectionProperty($this->parser, 'scopeGlue');
 
         $this->assertTrue($scopeGlue->isProtected());
 
         $scopeGlue->setAccessible(true);
-        $this->assertEquals('~', $scopeGlue->getValue($parser));
+        $this->assertEquals('~', $scopeGlue->getValue($this->parser));
     }
 
     public function testCanGetScopeGlue()
     {
-        $parser = new Lex\Parser();
-        $parser->scopeGlue('~');
-        $this->assertEquals('~', $parser->scopeGlue());
+        $this->parser->scopeGlue('~');
+        $this->assertEquals('~', $this->parser->scopeGlue());
     }
 
     public function testValueToLiteral()
     {
-        $parser = new Lex\Parser();
-        $method = new ReflectionMethod($parser, 'valueToLiteral');
+        $method = new ReflectionMethod($this->parser, 'valueToLiteral');
 
         $this->assertTrue($method->isProtected());
 
         $method->setAccessible(true);
 
-        $this->assertSame("NULL", $method->invoke($parser, null));
-        $this->assertSame("true", $method->invoke($parser, true));
-        $this->assertSame("false", $method->invoke($parser, false));
-        $this->assertSame("'some_string'", $method->invoke($parser, "some_string"));
-        $this->assertSame("24", $method->invoke($parser, 24));
-        $this->assertSame("true", $method->invoke($parser, array('foo')));
-        $this->assertSame("false", $method->invoke($parser, array()));
+        $this->assertSame("NULL", $method->invoke($this->parser, null));
+        $this->assertSame("true", $method->invoke($this->parser, true));
+        $this->assertSame("false", $method->invoke($this->parser, false));
+        $this->assertSame("'some_string'", $method->invoke($this->parser, "some_string"));
+        $this->assertSame("24", $method->invoke($this->parser, 24));
+        $this->assertSame("true", $method->invoke($this->parser, array('foo')));
+        $this->assertSame("false", $method->invoke($this->parser, array()));
 
         $mock = $this->getMock('stdClass', array('__toString'));
         $mock->expects($this->any())
              ->method('__toString')
              ->will($this->returnValue('obj_string'));
 
-        $this->assertSame("'obj_string'", $method->invoke($parser, $mock));
+        $this->assertSame("'obj_string'", $method->invoke($this->parser, $mock));
+    }
+
+    /**
+     * @dataProvider templateDataProvider
+     */
+    public function testGetVariable ($data)
+    {
+        $method = new ReflectionMethod($this->parser, 'getVariable');
+
+        $this->assertTrue($method->isProtected());
+
+        $method->setAccessible(true);
+
+        $this->assertEquals('Lex', $method->invoke($this->parser, 'name', $data));
+        $this->assertEquals(null, $method->invoke($this->parser, 'age', $data));
+        $this->assertEquals(false, $method->invoke($this->parser, 'age', $data, false));
+
+        $this->assertEquals(true, $method->invoke($this->parser, 'filters.enable', $data));
+        $this->assertEquals(null, $method->invoke($this->parser, 'filters.name', $data));
+        $this->assertEquals(false, $method->invoke($this->parser, 'filters.name', $data, false));
+
     }
 
     /**
@@ -70,9 +103,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $text = "{{zero_num}},{{zero_string}},{{zero_float}},{{empty_string}},{{null_value}},{{simplexml_empty_node}}";
         $expected = '0,0,0,,,';
 
-        $parser = new Lex\Parser();
-
-        $result = $parser->parseVariables($text, $data);
+        $result = $this->parser->parseVariables($text, $data);
 
         $this->assertEquals($expected, $result);
     }
