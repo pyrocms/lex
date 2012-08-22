@@ -1,6 +1,8 @@
 Lex
 ===
 
+[![Build Status](https://secure.travis-ci.org/fuelphp/lex.png?branch=master)](http://travis-ci.org/fuelphp/lex)
+
 Lex is a lightweight template parser.
 
 _Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrigan._
