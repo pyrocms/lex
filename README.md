@@ -263,7 +263,7 @@ All `if` blocks must be closed with the `{{ endif }}` tag.
 
 Variables inside of if Conditionals, do not, and should not, use the Tag delimeters (it will cause wierd issues with your output).
 
-A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`).  You can also use any of the Logical Operators (`!`, `||`, `&&`, `and`, `or`).
+A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`).  You can also use any of the Logical Operators (`!`, `not`, `||`, `&&`, `and`, `or`).
 
 **Examples**
 
@@ -293,6 +293,36 @@ A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!
         <p>Go ahead and drink!</p>
     {{ endif }}
 
+### The `not` Operator
+
+The `not` operator is equivilent to using the `!` operator.  They are completely interchangable (in-fact `not` is translated to `!` prior to compilation).
+
+### Undefined Variables in Conditionals
+
+Undefined variables in conditionals are evaluated to `null`.  This means you can do things like `{{ if foo }}` and not have to worry if the variable is defined or not.
+
+### Checking if a Variable Exists
+
+To check if a variable exists in a conditional, you use the `exists` keyword.
+
+**Examples**
+
+    {{ if exists foo }}
+        Foo Exists
+    {{ elseif not exists foo }}
+        Foo Does Not Exist
+    {{ endif }}
+
+You can also combine it with other conditions:
+
+    {{ if exists foo and foo !== 'bar' }}
+        Something here
+    {{ endif }}
+
+The expression `exists foo` evaluates to either `true` or `false`.  Therefore something like this works as well:
+
+    {{ if exists foo == false }}
+    {{ endif }}
 
 ### Callback Tags in Conditionals
 
