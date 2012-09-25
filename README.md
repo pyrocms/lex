@@ -34,6 +34,13 @@ Change Log
 * Fixes composer autoloading.
 * Moved classes into lib folder.
 
+2.1.0
+-----
+
+* Undefined variables in a conditional now evaluate to NULL, so `{{ if foo }}` now works properly.
+* Added the `exists` keyword.
+* Added the `not` keyword.
+
 Basic Usage
 ===========
 

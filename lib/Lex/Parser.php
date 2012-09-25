@@ -268,6 +268,17 @@ class Parser
                     $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
                 }
             }
+            $condition = preg_replace($this->conditionalNotRegex, '$1!$2', $condition);
+
+            if (preg_match_all($this->conditionalExistsRegex, $condition, $existsMatches, PREG_SET_ORDER)) {
+                foreach ($existsMatches as $m) {
+                    $exists = 'true';
+                    if ($this->getVariable($m[2], $data, '__doesnt_exist__') === '__doesnt_exist__') {
+                        $exists = 'false';
+                    }
+                    $condition = $this->createExtraction('__cond_exists', $m[0], $m[1].$exists.$m[3], $condition);
+                }
+            }
 
             $condition = preg_replace_callback('/\b('.$this->variableRegex.')\b/', array($this, 'processConditionVar'), $condition);
 
@@ -276,8 +287,14 @@ class Parser
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
             }
 
+            // Re-process for variables, we trick processConditionVar so that it will return null
+            $this->inCondition = false;
+            $condition = preg_replace_callback('/\b('.$this->variableRegex.')\b/', array($this, 'processConditionVar'), $condition);
+            $this->inCondition = true;
+
             // Re-inject any strings we extracted
             $condition = $this->injectExtractions($condition, '__cond_str');
+            $condition = $this->injectExtractions($condition, '__cond_exists');
 
             $conditional = '<?php ';
 
@@ -425,6 +442,7 @@ class Parser
         $var = is_array($match) ? $match[0] : $match;
         if (in_array(strtolower($var), array('true', 'false', 'null', 'or', 'and')) or
             strpos($var, '__cond_str') === 0 or
+            strpos($var, '__cond_exists') === 0 or
             is_numeric($var))
         {
             return $var;
@@ -494,6 +512,8 @@ class Parser
         $this->conditionalRegex = '/\{\{\s*(if|unless|elseif|elseunless)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
         $this->conditionalElseRegex = '/\{\{\s*else\s*\}\}/ms';
         $this->conditionalEndRegex = '/\{\{\s*endif\s*\}\}/ms';
+        $this->conditionalExistsRegex = '/(\s+|^)exists\s+('.$this->variableRegex.')(\s+|$)/ms';
+        $this->conditionalNotRegex = '/(\s+|^)not(\s+|$)/ms';
 
         $this->regexSetup = true;
 

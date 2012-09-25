@@ -105,4 +105,27 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * @dataProvider templateDataProvider
+     */
+    public function testExists($data)
+    {
+        $result = $this->parser->parse("{{ if exists name }}1{{ else }}0{{ endif }}", $data);
+        $this->assertEquals('1', $result);
+
+        $result = $this->parser->parse("{{ if not exists age }}0{{ else }}1{{ endif }}", $data);
+        $this->assertEquals('0', $result);
+    }
+
+    /**
+     * Regression test for https://github.com/fuelphp/lex/issues/2
+     *
+     * @dataProvider templateDataProvider
+     */
+    public function testUndefinedInConditional($data)
+    {
+        $result = $this->parser->parse("{{ if age }}0{{ else }}1{{ endif }}", $data);
+        $this->assertEquals('1', $result);
+    }
 }
