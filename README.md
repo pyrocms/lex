@@ -28,6 +28,11 @@ Change Log
 
 * Fixed a bug introduced in 2.0.1 where NULL variables were not being displayed.
 
+2.0.3
+
+* Fixes composer autoloading.
+* Moved classes into classes folder.
+
 Basic Usage
 ===========
 
