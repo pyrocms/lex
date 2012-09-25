@@ -66,7 +66,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider templateDataProvider
      */
-    public function testGetVariable ($data)
+    public function testGetVariable($data)
     {
         $method = new ReflectionMethod($this->parser, 'getVariable');
 
