@@ -44,7 +44,7 @@ Lex is a Composer package named `fuel/lex`.  To use it, simply add it to the `re
 
     {
         "require": {
-            "fuel/lex": "2.0.2"
+            "fuel/lex": "2.0.3"
         }
     }
 
