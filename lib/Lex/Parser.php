@@ -285,12 +285,12 @@ class Parser
             if ($callback) {
                 $condition = preg_replace('/\b(?!\{\s*)('.$this->callbackNameRegex.')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
-            }
 
-            // Incase the callback returned a string, we need to extract it
-            if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches)) {
-                foreach ($str_matches[0] as $m) {
-                    $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
+                // Incase the callback returned a string, we need to extract it
+                if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches)) {
+                    foreach ($str_matches[0] as $m) {
+                        $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
+                    }
                 }
             }
 
