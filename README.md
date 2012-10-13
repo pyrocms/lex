@@ -41,6 +41,12 @@ Change Log
 * Added the `exists` keyword.
 * Added the `not` keyword.
 
+
+2.1.1
+-----
+
+* Fixed an issue where strings returned by callbacks inside a comparison conditional were being processed incorrectly, causing the conditional to always fail.
+
 Basic Usage
 ===========
 
@@ -51,7 +57,7 @@ Lex is a Composer package named `fuel/lex`.  To use it, simply add it to the `re
 
     {
         "require": {
-            "fuel/lex": "2.0.3"
+            "fuel/lex": "2.1.1"
         }
     }
 
