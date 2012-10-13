@@ -128,4 +128,18 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $result = $this->parser->parse("{{ if age }}0{{ else }}1{{ endif }}", $data);
         $this->assertEquals('1', $result);
     }
+
+    /**
+     * Regression test for https://github.com/pyrocms/pyrocms/issues/1906
+     */
+    public function testCallbacksInConditionalComparison()
+    {
+        $result = $this->parser->parse("{{ if foo.bar.baz == 'yes' }}Yes{{ else }}No{{ endif }}", array(), function ($name, $attributes, $content) {
+            if ($name == 'foo.bar.baz') {
+                return 'yes';
+            }
+            return 'no';
+        });
+        $this->assertEquals('Yes', $result);
+    }
 }

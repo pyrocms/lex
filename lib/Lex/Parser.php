@@ -287,6 +287,13 @@ class Parser
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
             }
 
+            // Incase the callback returned a string, we need to extract it
+            if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches)) {
+                foreach ($str_matches[0] as $m) {
+                    $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
+                }
+            }
+
             // Re-process for variables, we trick processConditionVar so that it will return null
             $this->inCondition = false;
             $condition = preg_replace_callback('/\b('.$this->variableRegex.')\b/', array($this, 'processConditionVar'), $condition);
