@@ -142,4 +142,19 @@ class ParserTest extends PHPUnit_Framework_TestCase
         });
         $this->assertEquals('Yes', $result);
     }
+
+    /**
+     * Regression test for https://github.com/fuelphp/lex/issues/4
+     */
+    public function testDoubleTagsBeingGreedy()
+    {
+        $result = $this->parser->parse("{{ foo.bar.baz n='1' }}/{{ foo.bar.baz n='2' }}Content{{ /foo.bar.baz }}", array(), function ($name, $attributes, $content) {
+            if ($attributes['n'] == 1) {
+                $this->assertEquals('', $content);
+            } elseif ($attributes['n'] == 2) {
+                $this->assertEquals('Content', $content);
+            }
+        });
+        
+    }
 }
