@@ -148,11 +148,12 @@ class ParserTest extends PHPUnit_Framework_TestCase
      */
     public function testDoubleTagsBeingGreedy()
     {
-        $result = $this->parser->parse("{{ foo.bar.baz n='1' }}/{{ foo.bar.baz n='2' }}Content{{ /foo.bar.baz }}", array(), function ($name, $attributes, $content) {
+        $self = $this;
+        $result = $this->parser->parse("{{ foo.bar.baz n='1' }}/{{ foo.bar.baz n='2' }}Content{{ /foo.bar.baz }}", array(), function ($name, $attributes, $content) use ($self) {
             if ($attributes['n'] == 1) {
-                $this->assertEquals('', $content);
+                $self->assertEquals('', $content);
             } elseif ($attributes['n'] == 2) {
-                $this->assertEquals('Content', $content);
+                $self->assertEquals('Content', $content);
             }
         });
         
