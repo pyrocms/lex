@@ -47,6 +47,13 @@ Change Log
 
 * Fixed an issue where strings returned by callbacks inside a comparison conditional were being processed incorrectly, causing the conditional to always fail.
 
+2.2.0
+-----
+
+* Fixed a test which was PHP 5.4 only.
+* Added PHPUnit as a composer dev requirement.
+* Added a Lex\ParsingException class which is thrown when a parsing exception occurs.
+
 Basic Usage
 ===========
 
@@ -57,7 +64,7 @@ Lex is a Composer package named `fuel/lex`.  To use it, simply add it to the `re
 
     {
         "require": {
-            "fuel/lex": "2.1.1"
+            "fuel/lex": "2.2.*"
         }
     }
 
