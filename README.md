@@ -1,7 +1,7 @@
 Lex
 ===
 
-[![Build Status](https://secure.travis-ci.org/fuelphp/lex.png?branch=develop)](http://travis-ci.org/fuelphp/lex)
+[![Build Status](https://secure.travis-ci.org/pyrocms/lex.png?branch=master)](http://travis-ci.org/fuelphp/lex)
 
 Lex is a lightweight template parser.
 
