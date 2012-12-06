@@ -212,8 +212,10 @@ class Parser
             $content = '';
 
             $temp_text = substr($text, $start + strlen($tag));
-            if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE)) {
-                $content = substr($temp_text, 0, $match[0][1]);
+            if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE)
+                    and ! preg_match($regex, $sub_content = substr($temp_text, 0, $match[0][1]))) {
+
+                $content = $sub_content;
                 $tag .= $content.$match[0][0];
 
                 // Is there a nested block under this one existing with the same name?
@@ -285,6 +287,13 @@ class Parser
             if ($callback) {
                 $condition = preg_replace('/\b(?!\{\s*)('.$this->callbackNameRegex.')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
+
+                // Incase the callback returned a string, we need to extract it
+                if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches)) {
+                    foreach ($str_matches[0] as $m) {
+                        $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
+                    }
+                }
             }
 
             // Re-process for variables, we trick processConditionVar so that it will return null
@@ -670,8 +679,8 @@ class Parser
         $result = eval('?>'.$text.'<?php ');
 
         if ($result === false) {
-            echo '<br />You have a syntax error in your Lex tags. The snippet of text that contains the error has been output below:<br />';
-            exit(str_replace(array('?>', '<?php '), '', $text));
+            $output = 'You have a syntax error in your Lex tags. The offending code: ';
+            throw new ParsingException($output.str_replace(array('?>', '<?php '), '', $text));
         }
 
         return ob_get_clean();
