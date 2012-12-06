@@ -60,11 +60,11 @@ Basic Usage
 Using Lex
 -------------
 
-Lex is a Composer package named `fuel/lex`.  To use it, simply add it to the `require` section of you `composer.json` file.
+Lex is a Composer package named `pyrocms/lex`.  To use it, simply add it to the `require` section of you `composer.json` file.
 
     {
         "require": {
-            "fuel/lex": "2.2.*"
+            "pyrocms/lex": "2.2.*"
         }
     }
 

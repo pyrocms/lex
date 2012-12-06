@@ -1,5 +1,5 @@
 {
-    "name": "fuel/lex",
+    "name": "pyrocms/lex",
     "type": "library",
     "description": "A lightweight template parser.",
     "keywords": ["template","parser"],
@@ -11,6 +11,9 @@
             "role": "Lead Developer"
         }
     ],
+    "replace": {
+        "fuel/lex": "*"
+    },
     "require": {
         "php": ">=5.3.0"
     },
