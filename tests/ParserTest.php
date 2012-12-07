@@ -142,6 +142,176 @@ class ParserTest extends PHPUnit_Framework_TestCase
         });
         $this->assertEquals('Yes', $result);
     }
+    
+    /**
+     * Test for https://github.com/pyrocms/pyrocms/issues/2104
+     * 
+     * Failing IF statements multiple levels deep
+     * - IS_JUL       Tests 'text' == 'text'
+     * - TOTAL_GT_0   Tests total > 0
+     * - HAS_ENTRIES  Tests isset(entries)
+     */
+    public function testDeepCallbacksInConditionalComparison()
+    {
+        $data = array (
+			'pagination' => null,
+			'total' => 172,
+			'years' => array (
+				2012 => array (
+				  'year' => '2012',
+				  'months' => array (
+					'01' => array (
+					  'month' => 'jan',
+					  'month_num' => '01',
+					  'date' => 946713600,
+					  'total' => 3,
+					  'entries' => array (
+						1326787200 => array (),
+						1326355200 => array (),
+						1325577600 => array (),
+					  ),
+					),
+					'02' => array (
+					  'month' => 'feb',
+					  'month_num' => '02',
+					  'date' => 949392000,
+					  'total' => 0,
+					),
+					'07' => array (
+					  'month' => 'jul',
+					  'month_num' => '07',
+					  'date' => 962434800,
+					  'total' => 1,
+					  'entries' => array (
+						1343026800 => array (),
+					  ),
+					),
+					10 => array (
+					  'month' => 'oct',
+					  'month_num' => '10',
+					  'date' => 970383600,
+					  'total' => 2,
+					  'entries' => array (
+						1350543600 => array (),
+						1350457200 => array (),
+					  ),
+					),
+					11 => array (
+					  'month' => 'nov',
+					  'month_num' => '11',
+					  'date' => 973065600,
+					  'total' => 4,
+					  'entries' => array (
+						1354003200 => array (),
+						1353398400 => array (),
+						1352707200 => array (),
+					  ),
+					),
+					12 => array (
+					  'month' => 'dec',
+					  'month_num' => '12',
+					  'date' => 975657600,
+					  'total' => 0,
+					),
+				  ),
+				),
+				2011 => array (
+				  'year' => '2011',
+				  'months' => array (
+					'01' => array (
+					  'month' => 'jan',
+					  'month_num' => '01',
+					  'date' => 946713600,
+					  'total' => 0,
+					),
+					'04' => array (
+					  'month' => 'apr',
+					  'month_num' => '04',
+					  'date' => 954576000,
+					  'total' => 13,
+					  'entries' => array (
+						1303974000 => array (),
+						1303887600 => array (),
+						1303369200 => array (),
+						1303196400 => array (),
+						1302937200 => array (),
+						1302764400 => array (),
+						1302678000 => array (),
+						1302591600 => array (),
+						1302159600 => array (),
+						1302073200 => array (),
+						1301900400 => array (),
+						1301641200 => array (),
+					  ),
+					),
+					'07' => array (
+					  'month' => 'jul',
+					  'month_num' => '07',
+					  'date' => 962434800,
+					  'total' => 0,
+					),
+					'08' => array (
+					  'month' => 'aug',
+					  'month_num' => '08',
+					  'date' => 965113200,
+					  'total' => 8,
+					  'entries' => array (
+						1314774000 => array (),
+						1314169200 => array (),
+						1313650800 => array (),
+						1313478000 => array (),
+						1313391600 => array (),
+						1313046000 => array (),
+						1312354800 => array (),
+					  ),
+					),
+				  ),
+				),
+			),
+		);
+        
+        $html = <<<HTML
+YEARS(
+{{ years }}
+	YEAR: {{ year }}
+	MONTHS:(
+{{ months }}
+		MONTH: {{ month }}, IS_JUL: {{ if month == 'jul' }}true{{ else }}false{{ endif }}, TOTAL_GT_0: {{ if total > 0 }}true{{ else }}false{{ endif }}, HAS_ENTRIES: {{ if entries }}true{{ else }}false{{ endif }}
+
+{{ /months }}
+	)
+{{ /years }}
+)
+HTML;
+
+		$expected_html = <<<HTML
+YEARS(
+	YEAR: 2012
+	MONTHS:(
+		MONTH: jan, IS_JUL: false, TOTAL_GT_0: true, HAS_ENTRIES: true
+		MONTH: feb, IS_JUL: false, TOTAL_GT_0: false, HAS_ENTRIES: false
+		MONTH: jul, IS_JUL: true, TOTAL_GT_0: true, HAS_ENTRIES: true
+		MONTH: oct, IS_JUL: false, TOTAL_GT_0: true, HAS_ENTRIES: true
+		MONTH: nov, IS_JUL: false, TOTAL_GT_0: true, HAS_ENTRIES: true
+		MONTH: dec, IS_JUL: false, TOTAL_GT_0: false, HAS_ENTRIES: false
+
+	)
+	YEAR: 2011
+	MONTHS:(
+		MONTH: jan, IS_JUL: false, TOTAL_GT_0: false, HAS_ENTRIES: false
+		MONTH: apr, IS_JUL: false, TOTAL_GT_0: true, HAS_ENTRIES: true
+		MONTH: jul, IS_JUL: true, TOTAL_GT_0: false, HAS_ENTRIES: false
+		MONTH: aug, IS_JUL: false, TOTAL_GT_0: true, HAS_ENTRIES: true
+
+	)
+
+)
+HTML;
+        
+        $result = $this->parser->parse($html, $data);
+        $this->assertEquals($expected_html, $result);
+        
+    }
 
     /**
      * Regression test for https://github.com/fuelphp/lex/issues/4
@@ -158,4 +328,5 @@ class ParserTest extends PHPUnit_Framework_TestCase
         });
         
     }
+    
 }
