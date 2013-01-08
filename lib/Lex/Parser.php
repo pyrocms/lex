@@ -51,6 +51,7 @@ class Parser
      */
     public function parse($text, $data = array(), $callback = false, $allowPhp = false)
     {
+
         $this->setupRegex();
         $this->allowPhp = $allowPhp;
 
@@ -137,7 +138,9 @@ class Parser
                 if ($loop_data = $this->getVariable($match[1][0], $data)) {
                     $looped_text = '';
                     foreach ($loop_data as $item_data) {
-                        $str = $this->parseConditionals($match[2][0], $item_data, $callback);
+                        $str = $this->extractLoopedTags($match[2][0], $item_data, $callback);
+                        $str = $this->parseConditionals($str, $item_data, $callback);
+                        $str = $this->injectExtractions($str, 'looped_tags');
                         $str = $this->parseVariables($str, $item_data, $callback);
                         if ($callback !== null) {
                             $str = $this->parseCallbackTags($str, $item_data, $callback);
@@ -287,14 +290,15 @@ class Parser
             if ($callback) {
                 $condition = preg_replace('/\b(?!\{\s*)('.$this->callbackNameRegex.')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
+            }
 
-                // Incase the callback returned a string, we need to extract it
-                if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches)) {
-                    foreach ($str_matches[0] as $m) {
-                        $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
-                    }
+            // Re-extract the strings that have now been possibly added.
+            if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches)) {
+                foreach ($str_matches[0] as $m) {
+                    $condition = $this->createExtraction('__cond_str', $m, $m, $condition);
                 }
             }
+
 
             // Re-process for variables, we trick processConditionVar so that it will return null
             $this->inCondition = false;
