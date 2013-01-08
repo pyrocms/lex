@@ -430,7 +430,7 @@ class Parser
      * @param  string $text Text to inject into
      * @return string
      */
-    public function injectNoparse($text)
+    public static function injectNoparse($text)
     {
         if (isset(self::$extractions['noparse'])) {
             foreach (self::$extractions['noparse'] AS $hash => $replacement) {

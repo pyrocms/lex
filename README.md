@@ -1,7 +1,7 @@
 Lex
 ===
 
-[![Build Status](https://secure.travis-ci.org/pyrocms/lex.png?branch=develop)](http://travis-ci.org/pyrocms/lex)
+[![Build Status](https://secure.travis-ci.org/pyrocms/lex.png?branch=master)](http://travis-ci.org/pyrocms/lex)
 
 Lex is a lightweight template parser.
 
@@ -9,6 +9,46 @@ _Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrig
 
 Change Log
 ==========
+
+2.2.1
+-----
+
+* Changed injectNoparse to be static.
+
+2.2.0
+-----
+
+* Fixed a test which was PHP 5.4 only.
+* Added PHPUnit as a composer dev requirement.
+* Added a Lex\ParsingException class which is thrown when a parsing exception occurs.
+
+2.1.1
+-----
+
+* Fixed an issue where strings returned by callbacks inside a comparison conditional were being processed incorrectly, causing the conditional to always fail.
+
+2.1.0
+-----
+
+* Undefined variables in a conditional now evaluate to NULL, so `{{ if foo }}` now works properly.
+* Added the `exists` keyword.
+* Added the `not` keyword.
+
+2.0.3
+-----
+
+* Fixes composer autoloading.
+* Moved classes into lib folder.
+
+2.0.2
+-----
+
+* Fixed a bug introduced in 2.0.1 where NULL variables were not being displayed.
+
+2.0.1
+-----
+
+* Fixed a bug where variables with a "falsey" (e.g. 0, "0", -1, etc.) value were not displayed.
 
 2.0.0
 -----
@@ -18,41 +58,7 @@ Change Log
 * Lex_Autoloader has been removed.  It is now PSR-0 compliant.
 * Added the support for `{{ unless }}` and `{{ elseunless }}`.
 
-2.0.1
------
 
-* Fixed a bug where variables with a "falsey" (e.g. 0, "0", -1, etc.) value were not displayed.
-
-2.0.2
------
-
-* Fixed a bug introduced in 2.0.1 where NULL variables were not being displayed.
-
-2.0.3
------
-
-* Fixes composer autoloading.
-* Moved classes into lib folder.
-
-2.1.0
------
-
-* Undefined variables in a conditional now evaluate to NULL, so `{{ if foo }}` now works properly.
-* Added the `exists` keyword.
-* Added the `not` keyword.
-
-
-2.1.1
------
-
-* Fixed an issue where strings returned by callbacks inside a comparison conditional were being processed incorrectly, causing the conditional to always fail.
-
-2.2.0
------
-
-* Fixed a test which was PHP 5.4 only.
-* Added PHPUnit as a composer dev requirement.
-* Added a Lex\ParsingException class which is thrown when a parsing exception occurs.
 
 Basic Usage
 ===========
