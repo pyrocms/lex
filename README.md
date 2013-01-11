@@ -10,6 +10,12 @@ _Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrig
 Change Log
 ==========
 
+2.3.0
+-----
+
+* Added support for self-closing Callback Tags (e.g. `{{ foo.bar /}}` instead of `{{ foo.bar }}{{ /foo.bar }}`).
+* Rolled back the change to make Callback Tags less greedy.  Callback Tags are now greedy again.  If you want to use both Single and Block tags in the same template, you must close the Single tags.
+
 2.2.3
 -----
 
@@ -405,6 +411,31 @@ The callback must also return a string, which will replace the tag in the conten
         // Do something useful
         return $result;
     }
+
+### Closing Callback Tags
+
+If a Callback Tag can be used in single or block form, then when using it in it's singular form, it must be closed (just like HTML).
+
+**Example**
+
+    {{ foo.bar.baz }}{{ /foo.bar.baz }}
+
+    {{ foo.bar.baz }}
+        Content
+    {{ /foo.bar.baz }}
+
+#### Self Closing Callback Tags
+
+You can shorten the above by using self-closing tags, just like in HTML.  You simply put a `/` at the end of the tag (there MUST be NO space between the `/` and the `}}`).
+
+**Example**
+
+    {{ foo.bar.baz /}}
+
+    {{ foo.bar.baz }}
+        Content
+    {{ /foo.bar.baz }}
+
 
 Recursive Callback Blocks
 -------------
