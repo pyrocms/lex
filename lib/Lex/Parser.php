@@ -188,7 +188,7 @@ class Parser
         if ($inCondition) {
             $regex = '/\{\s*('.$this->variableRegex.')(\s+.*?)?\s*\}/ms';
         } else {
-            $regex = '/\{\{\s*('.$this->variableRegex.')(\s+.*?)?\s*\}\}/ms';
+            $regex = '/\{\{\s*('.$this->variableRegex.')(\s+.*?)?\s*(\/)?\}\}/ms';
         }
         /**
          * $match[0][0] is the raw tag
@@ -197,8 +197,11 @@ class Parser
          * $match[1][1] is the offset of callback name
          * $match[2][0] is the parameters
          * $match[2][1] is the offset of parameters
+         * $match[3][0] is the self closure
+         * $match[3][1] is the offset of closure
          */
         while (preg_match($regex, $text, $match, PREG_OFFSET_CAPTURE)) {
+            $selfClosed = false;
             $parameters = array();
             $tag = $match[0][0];
             $start = $match[0][1];
@@ -212,13 +215,15 @@ class Parser
                 $parameters = $this->parseParameters($raw_params, $cb_data, $callback);
             }
 
+            if (isset($match[3])) {
+                $selfClosed = true;
+            }
             $content = '';
 
             $temp_text = substr($text, $start + strlen($tag));
-            if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE)
-                    and ! preg_match('/\{\{\s*'.preg_quote($name, '/').'(\s+.*?)?\s*\}\}/ms', $sub_content = substr($temp_text, 0, $match[0][1]))) {
+            if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE) && ! $selfClosed) {
 
-                $content = $sub_content;
+                $content = substr($temp_text, 0, $match[0][1]);
                 $tag .= $content.$match[0][0];
 
                 // Is there a nested block under this one existing with the same name?

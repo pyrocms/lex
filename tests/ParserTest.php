@@ -300,20 +300,17 @@ HTML;
 
     }
 
-    /**
-     * Regression test for https://github.com/fuelphp/lex/issues/4
-     */
-    public function testDoubleTagsBeingGreedy()
+    public function testSelfClosingTag()
     {
         $self = $this;
-        $result = $this->parser->parse("{{ foo.bar.baz n='1' }}/{{ foo.bar.baz n='2' }}Content{{ /foo.bar.baz }}", array(), function ($name, $attributes, $content) use ($self) {
-            if ($attributes['n'] == 1) {
-                $self->assertEquals('', $content);
-            } elseif ($attributes['n'] == 2) {
-                $self->assertEquals('Content', $content);
+        $result = $this->parser->parse("{{ foo.bar.baz /}}Here{{ foo.bar.baz }}Content{{ /foo.bar.baz }}", array(), function ($name, $attributes, $content) use ($self) {
+            if ($content == '') {
+                return 'DanWas';
+            } else {
+                return '';
             }
         });
-
+        $this->assertEquals('DanWasHere', $result);
     }
 
 }
