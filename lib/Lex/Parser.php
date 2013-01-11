@@ -216,7 +216,7 @@ class Parser
 
             $temp_text = substr($text, $start + strlen($tag));
             if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE)
-                    and ! preg_match($regex, $sub_content = substr($temp_text, 0, $match[0][1]))) {
+                    and ! preg_match('/\{\{\s*'.preg_quote($name, '/').'(\s+.*?)?\s*\}\}/ms', $sub_content = substr($temp_text, 0, $match[0][1]))) {
 
                 $content = $sub_content;
                 $tag .= $content.$match[0][0];
