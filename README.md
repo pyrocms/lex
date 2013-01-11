@@ -10,6 +10,11 @@ _Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrig
 Change Log
 ==========
 
+2.2.3
+-----
+
+* Fixes issue which caused all callbacks to be processed as single tags, even if they were a block.
+
 2.2.2
 -----
 
