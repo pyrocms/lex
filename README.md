@@ -10,6 +10,11 @@ _Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrig
 Change Log
 ==========
 
+2.2.2
+-----
+
+* Fixed #7 - Conditionals inside looped data tags now work as expected.
+
 2.2.1
 -----
 
@@ -91,7 +96,7 @@ You can also set the Scope Glue (see "Scope Glue" under Syntax below):
     $parser = new Lex\Parser();
     $parser->scopeGlue(':');
     $template = $parser->parse(file_get_contents('template.lex'), $data);
-	
+
 To allow noparse extractions to accumulate so they don't get parsed by a later call to the parser set cumulativeNoparse to true:
 
     $parser = new Lex\Parser();
@@ -303,7 +308,7 @@ A Conditional can contain any Comparison Operators you would do in PHP (`==`, `!
     {{ else }}
         <p>My name is John Doe</p>
     {{ endif }}
-    
+
     {{ unless age > 21 }}
         <p>You are to young.</p>
     {{ elseunless age < 80 }}
@@ -403,11 +408,11 @@ The recursive callback tag allows you to loop through a child's element with the
 by using the ***recursive*** keyword along with the array key name. The two words must be surrounded by asterisks as shown in the example below.
 
 **Example**
-	
+
 	function my_callback($name, $attributes, $content)
 	{
 		$data = array(
-				'url' 		=> 'url_1', 
+				'url' 		=> 'url_1',
 				'title' 	=> 'First Title',
 				'children'	=> array(
 					array(
@@ -432,16 +437,16 @@ by using the ***recursive*** keyword along with the array key name. The two word
 					)
 				)
 		);
-		
+
 		$parser = new Lex\Parser();
 		return $parser->parse($content, $data);
 	}
-	
+
 
 In the template set it up as shown below. If `children` is not empty Lex will
 parse the contents between the `{{ navigation }}` tags again for each of `children`'s arrays.
 The resulting text will then be inserted in place of `{{ *recursive children* }}`. This can be done many levels deep.
-	
+
 	<ul>
 		{{ navigation }}
 			<li><a href="{{ url }}">{{ title }}</a>
@@ -465,7 +470,7 @@ The resulting text will then be inserted in place of `{{ *recursive children* }}
 						<li><a href="url_3">Third Title</a></li>
 					</ul>
 				</li>
-				
+
 				<li><a href="url_4">Fourth Title</a>
 					<ul>
 						<li><a href="url_5">Fifth Title</a></li>
