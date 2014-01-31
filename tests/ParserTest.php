@@ -313,4 +313,88 @@ HTML;
         $this->assertEquals('DanWasHere', $result);
     }
 
+    /**
+     * Test that the toArray method converts an standard object to an array
+     */ 
+    public function testObjectToArray()
+    {
+        $data = new stdClass;
+        $data->foo = 'bar';
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(array('foo' => 'bar'), $result);
+    }
+
+    /**
+     * Test that the toArray method converts an object that implements ArrayableInterface to an array
+     */
+    public function testArrayableInterfaceToArray()
+    {
+        $data = new Lex\ArrayableObjectExample;
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(array('foo' => 'bar'), $result);
+    }
+
+    /**
+     * Test that the toArray method converts an integer to an array
+     */
+    public function testIntegerToArray()
+    {
+        $data = 1;
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(true, is_array($result));
+    }
+
+    /**
+     * Test that the toArray method converts an string to an array
+     */
+    public function testStringToArray()
+    {
+        $data = 'Hello World';
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(true, is_array($result));
+    }
+
+    /**
+     * Test that the toArray method converts an boolean to an array
+     */
+    public function testBooleanToArray()
+    {
+        $data = true;
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(true, is_array($result));
+    }
+
+    /**
+     * Test that the toArray method converts an null value to an array
+     */
+    public function testNullToArray()
+    {
+        $data = null;
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(true, is_array($result));
+    }
+
+    /**
+     * Test that the toArray method converts an float value to an array
+     */
+    public function testFloatToArray()
+    {
+        $data = 1.23456789;
+
+        $result = $this->parser->toArray($data);
+
+        $this->assertEquals(true, is_array($result));
+    }
 }
