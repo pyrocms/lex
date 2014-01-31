@@ -137,16 +137,18 @@ class Parser
             foreach ($data_matches as $index => $match) {
                 if ($loop_data = $this->getVariable($match[1][0], $data)) {
                     $looped_text = '';
-                    foreach ($loop_data as $item_data) {
-                        $str = $this->extractLoopedTags($match[2][0], $item_data, $callback);
-                        $str = $this->parseConditionals($str, $item_data, $callback);
-                        $str = $this->injectExtractions($str, 'looped_tags');
-                        $str = $this->parseVariables($str, $item_data, $callback);
-                        if ($callback !== null) {
-                            $str = $this->parseCallbackTags($str, $item_data, $callback);
-                        }
+                    if (is_array($loop_data) or ($loop_data instanceof \IteratorAggregate)) {
+                        foreach ($loop_data as $item_data) {
+                            $str = $this->extractLoopedTags($match[2][0], $item_data, $callback);
+                            $str = $this->parseConditionals($str, $item_data, $callback);
+                            $str = $this->injectExtractions($str, 'looped_tags');
+                            $str = $this->parseVariables($str, $item_data, $callback);
+                            if ($callback !== null) {
+                                $str = $this->parseCallbackTags($str, $item_data, $callback);
+                            }
 
-                        $looped_text .= $str;
+                            $looped_text .= $str;
+                        }                        
                     }
                     $text = preg_replace('/'.preg_quote($match[0][0], '/').'/m', addcslashes($looped_text, '\\$'), $text, 1);
                 } else { // It's a callback block.
@@ -209,6 +211,7 @@ class Parser
             if (isset($match[2])) {
                 $cb_data = $data;
                 if ( !empty(self::$callbackData)) {
+                    $data = $this->toArray($data);
                     $cb_data = array_merge(self::$callbackData, $data);
                 }
                 $raw_params = $this->injectExtractions($match[2][0], '__cond_str');
@@ -367,7 +370,7 @@ class Parser
                 $has_children = true;
 
                 // If this is a object let's convert it to an array.
-                is_array($child) OR $child = (array) $child;
+                $child = $this->toArray($child);
 
                 // Does this child not contain any children?
                 // Let's set it as empty then to avoid any errors.
@@ -699,7 +702,7 @@ class Parser
     /**
      * Parses a parameter string into an array
      *
-     * @param	string	The string of parameters
+     * @param   string  The string of parameters
      * @return array
      */
     protected function parseParameters($parameters, $data, $callback)
@@ -737,5 +740,28 @@ class Parser
         }
 
         return array();
+    }
+
+    /**
+     * Convert objects to arrays
+     * 
+     * @param mixed $data
+     * @return array
+     */ 
+    public function toArray($data = array())
+    {
+        if ($data instanceof ArrayableInterface) {
+            $data = $data->toArray();
+        }
+
+        // Objects to arrays
+        is_array($data) or $data = (array) $data;
+
+        // lower case array keys
+        if (is_array($data)) {
+            $data = array_change_key_case($data, CASE_LOWER);
+        }
+
+        return $data;
     }
 }
