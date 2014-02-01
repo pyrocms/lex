@@ -5,10 +5,18 @@ Lex
 
 Lex is a lightweight template parser.
 
-_Lex is released under the MIT License and is Copyrighted 2011 - 2012 Dan Horrigan._
+_Lex is released under the MIT License and is Copyrighted 2011 - 2014 PyroCMS Team._
 
 Change Log
 ==========
+
+
+2.3.1
+-----
+
+* Added an ArrayableInterface that automatically converts objects to arrays. This allows an opportunity to define how an object will be converted to an array by adding a `->toArray()` method.
+* Looped data is now checked if it is an array or if it implements \IteratorAggregate. This prevents "invalid arguments in foreach" errors while allowing arrays and Collection objects to be iterated.
+* Dropped support for PHP 5.3
 
 2.3.0
 -----
