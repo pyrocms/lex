@@ -54,7 +54,12 @@ class Parser
 
         $this->setupRegex();
         $this->allowPhp = $allowPhp;
-
+        
+        // Only convert objects to arrays
+        if (is_object($data)) {
+            $data = $this->toArray($data);    
+        }
+        
         // Is this the first time parse() is called?
         if (self::$data === null) {
             // Let's store the local data array for later use.

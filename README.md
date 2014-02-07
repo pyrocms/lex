@@ -10,6 +10,11 @@ _Lex is released under the MIT License and is Copyrighted 2011 - 2014 PyroCMS Te
 Change Log
 ==========
 
+2.3.2
+-----
+
+* Convert objects with `->toArray()` at the beginning of the `parser()` method only.
+* As much as we want to say goodbye to PHP 5.3, we brought it back for now.
 
 2.3.1
 -----
